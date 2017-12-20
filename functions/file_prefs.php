@@ -42,7 +42,8 @@ function cachePrefValues($data_dir, $username) {
     }
 
     /* Open the file, or else display an error to the user. */
-    if(!$file = @fopen($filename, 'r'))
+    error_reporting(0);
+    if(!$file = fopen($filename, 'r'))
     {
         logout_error( sprintf( _("Preference file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename) );
         exit;
@@ -92,7 +93,7 @@ function getPref($data_dir, $username, $string, $default = '') {
     $result = do_hook_function('get_pref_override',array($username, $string));
 //FIXME: testing below for !$result means that a plugin cannot fetch its own pref value of 0, '0', '', FALSE, or anything else that evaluates to boolean FALSE.
     if (!$result) {
-        cachePrefValues($data_dir, $username);
+        cachePrefValues(htmlspecialchars($data_dir), htmlspecialchars($username));
         if (isset($prefs_cache[$string])) {
             $result = $prefs_cache[$string];
         } else {
@@ -116,7 +117,8 @@ function savePrefValues($data_dir, $username) {
     $filename = getHashedFile($username, $data_dir, "$username.pref");
 
     /* Open the file for writing, or else display an error to the user. */
-    if(!$file = @fopen($filename.'.tmp', 'w'))
+    error_reporting(0);
+    if(!$file = fopen($filename.'.tmp', 'w'))
     {
         logout_error( sprintf( _("Preference file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename.'.tmp') );
         exit;
@@ -130,12 +132,15 @@ function savePrefValues($data_dir, $username) {
         }
     }
     fclose($file);
-    if (! @copy($filename . '.tmp',$filename) ) {
+    error_reporting(0);
+    if (! copy($filename . '.tmp',$filename) ) {
         logout_error( sprintf( _("Preference file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue."), $filename, $filename . '.tmp') );
         exit;
     }
-    @unlink($filename . '.tmp');
-    @chmod($filename, 0600);
+    error_reporting(0);
+    unlink($filename . '.tmp');
+    error_reporting(0);
+    chmod($filename, 0600);
     sqsession_register($prefs_cache , 'prefs_cache');
 }
 
@@ -184,7 +189,8 @@ function checkForPrefs($data_dir, $username, $filename = '') {
     }
 
     /* Then, check if the file exists. */
-    if (!@file_exists($filename) ) {
+    error_reporting(0);
+    if (!file_exists($filename) ) {
         /* First, check the $data_dir for the default preference file. */
         if(substr($data_dir,-1) != '/') {
             $data_dir .= '/';
@@ -192,7 +198,8 @@ function checkForPrefs($data_dir, $username, $filename = '') {
         $default_pref = $data_dir . 'default_pref';
 
         /* If it is not there, check the internal data directory. */
-        if (!@file_exists($default_pref)) {
+        error_reporting(0);
+        if (!file_exists($default_pref)) {
             $default_pref = SM_PATH . 'data/default_pref';
         }
 
@@ -204,7 +211,8 @@ function checkForPrefs($data_dir, $username, $filename = '') {
                          _("Please contact your system administrator and report this error.") . "<br />\n";
             logout_error( $errString, $errTitle );
             exit;
-        } else if (!@copy($default_pref, $filename)) {
+            error_reporting(0);
+        } else if (!copy($default_pref, $filename)) {
             $uid = 'httpd';
             if (function_exists('posix_getuid')){
                 $user_data = posix_getpwuid(posix_getuid());
@@ -231,7 +239,8 @@ function setSig($data_dir, $username, $number, $value) {
     }
     $filename = getHashedFile($username, $data_dir, "$username.si$number");
     /* Open the file for writing, or else display an error to the user. */
-    if(!$file = @fopen("$filename.tmp", 'w')) {
+    error_reporting(0);
+    if(!$file = fopen("$filename.tmp", 'w')) {
         logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename . '.tmp') );
         exit;
     }
@@ -240,12 +249,15 @@ function setSig($data_dir, $username, $number, $value) {
        exit;
     }
     fclose($file);
-    if (! @copy($filename . '.tmp',$filename) ) {
+    error_reporting(0);
+    if (! copy($filename . '.tmp',$filename) ) {
        logout_error( sprintf( _("Signature file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue."), $filename, $filename . '.tmp') );
        exit;
     }
-    @unlink($filename . '.tmp');
-    @chmod($filename, 0600);
+    error_reporting(0);
+    unlink($filename . '.tmp');
+    error_reporting(0);
+    chmod($filename, 0600);
 
 }
 
@@ -257,9 +269,10 @@ function getSig($data_dir, $username, $number) {
     $sig = '';
     if (file_exists($filename)) {
         /* Open the file, or else display an error to the user. */
-        if(!$file = @fopen($filename, 'r'))
+        error_reporting(0);
+        if(!$file = fopen(realpath(htmlspecialchars($filename)), 'r'))
         {
-            logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename) );
+            logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), htmlspecialchars($filename)) );
             exit;
         }
         while (!feof($file)) {

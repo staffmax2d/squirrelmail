@@ -30,6 +30,7 @@ class html {
         $this->javascript = $javascript;
     }
 
+    
     function htmlAdd($el, $last=true) {
         if ($last) {
             $this->html_el[] = $el;

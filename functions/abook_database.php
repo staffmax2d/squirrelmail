@@ -1,5 +1,7 @@
 <?php
 
+
+
 /**
  * abook_database.php
  *
@@ -103,12 +105,12 @@ class abook_database extends addressbook_backend {
      */
     function abook_database($param) {
         $this->sname = _("Personal address book");
-
+        try{
         if (is_array($param)) {
             if (empty($param['dsn']) ||
                 empty($param['table']) ||
                 empty($param['owner'])) {
-                return $this->set_error('Invalid parameters');
+                throw new Exception("Parameter cannot be null");
             }
 
             $this->dsn   = $param['dsn'];
@@ -130,10 +132,13 @@ class abook_database extends addressbook_backend {
             $this->open(true);
         }
         else {
-            return $this->set_error('Invalid argument to constructor');
+            throw new Exception('Invalid argument to constructor');
         }
-    }
-
+        }
+    
+        catch (Exception $e) {
+            echo "Exception ".": ".$e->getMessage();
+        }
 
     /**
      * Open the database.
@@ -495,3 +500,4 @@ class abook_database extends addressbook_backend {
 } /* End of class abook_database */
 
 // vim: et ts=4
+}

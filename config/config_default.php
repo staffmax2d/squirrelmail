@@ -1062,5 +1062,7 @@ $config_use_color = 2;
 /**
  * This option includes special configuration options
  */
-@include SM_PATH . 'config/config_local.php';
+
+error_reporting(0);
+include SM_PATH . 'config/config_local.php';
 

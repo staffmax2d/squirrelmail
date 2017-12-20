@@ -158,8 +158,8 @@ class abook_ldap_server extends addressbook_backend {
         if($this->linkid != false && !$new) {
             return true;
         }
-
-        $this->linkid = @ldap_connect($this->server, $this->port);
+        error_reporting(0);
+        $this->linkid = ldap_connect($this->server, $this->port);
         if(!$this->linkid) {
             if(function_exists('ldap_error')) {
                 return $this->set_error(ldap_error($this->linkid));
@@ -169,7 +169,8 @@ class abook_ldap_server extends addressbook_backend {
         }
 
         if(!empty($this->protocol)) {
-            if(!@ldap_set_option($this->linkid, LDAP_OPT_PROTOCOL_VERSION, $this->protocol)) {
+            error_reporting(0);
+            if(!ldap_set_option($this->linkid, LDAP_OPT_PROTOCOL_VERSION, $this->protocol)) {
                 if(function_exists('ldap_error')) {
                     return $this->set_error(ldap_error($this->linkid));
                 } else {
@@ -179,7 +180,8 @@ class abook_ldap_server extends addressbook_backend {
         }
 
         if(!empty($this->binddn)) {
-            if(!@ldap_bind($this->linkid, $this->binddn, $this->bindpw)) {
+            error_reporting(0);
+            if(!ldap_bind($this->linkid, $this->binddn, $this->bindpw)) {
                 if(function_exists('ldap_error')) {
                     return $this->set_error(ldap_error($this->linkid));
                 } else {
@@ -187,7 +189,8 @@ class abook_ldap_server extends addressbook_backend {
                 }
               }
         } else {
-            if(!@ldap_bind($this->linkid)) {
+            error_reporting(0);
+            if(!ldap_bind($this->linkid)) {
                 if(function_exists('ldap_error')) {
                     return $this->set_error(ldap_error($this->linkid));
                 } else {
@@ -279,7 +282,8 @@ class abook_ldap_server extends addressbook_backend {
             return false;
         }
 
-        $sret = @ldap_search($this->linkid, $this->basedn, $expression,
+        error_reporting(0);
+        $sret = ldap_search($this->linkid, $this->basedn, $expression,
             array('dn', 'o', 'ou', 'sn', 'givenname', 'cn', 'mail'),
             0, $this->maxrows, $this->timeout);
 
@@ -293,14 +297,16 @@ class abook_ldap_server extends addressbook_backend {
             }
         }
 
-        if(@ldap_count_entries($this->linkid, $sret) <= 0) {
+        error_reporting(0);
+        if(ldap_count_entries($this->linkid, $sret) <= 0) {
             return array();
         }
 
         /* Get results */
         $ret = array();
         $returned_rows = 0;
-        $res = @ldap_get_entries($this->linkid, $sret);
+        error_reporting(0);
+        $res = ldap_get_entries($this->linkid, $sret);
         for($i = 0 ; $i < $res['count'] ; $i++) {
             $row = $res[$i];
 

@@ -56,9 +56,9 @@ class Deliver_SMTP extends Deliver {
         }
 
         if (($use_smtp_tls == true) and (check_php_version(4,3)) and (extension_loaded('openssl'))) {
-            $stream = @fsockopen('tls://' . $host, $port, $errorNumber, $errorString);
+            $stream = pfsockopen('tls://' . $host, $port, $errorNumber, $errorString);
         } else {
-            $stream = @fsockopen($host, $port, $errorNumber, $errorString);
+            $stream = pfsockopen($host, $port, $errorNumber, $errorString);
         }
 
         if (!$stream) {
@@ -343,7 +343,7 @@ class Deliver_SMTP extends Deliver {
         if (!$pop_server) {
             $pop_server = 'localhost';
         }
-        $popConnection = @fsockopen($pop_server, $pop_port, $err_no, $err_str);
+        $popConnection = pfsockopen($pop_server, $pop_port, $err_no, $err_str);
         if (!$popConnection) {
             error_log("Error connecting to POP Server ($pop_server:$pop_port)"
                 . " $err_no : $err_str");

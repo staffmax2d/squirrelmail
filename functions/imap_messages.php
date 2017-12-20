@@ -54,7 +54,7 @@ function sqimap_msgs_list_copy($imap_stream, $id, $mailbox) {
  *
  */
 function sqimap_msgs_list_move($imap_stream, $id, $mailbox, $handle_errors = true) {
-    if (sqimap_msgs_list_copy ($imap_stream, $id, $mailbox, $handle_errors)) {
+    if (sqimap_msgs_list_copy ($imap_stream, $id, $mailbox)) {
         return sqimap_toggle_flag($imap_stream, $id, '\\Deleted', true, true);
     } else {
         return false;
@@ -964,8 +964,9 @@ function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) 
             }
             $messages[$msgi]['FROM-SORT'] = $from;
             $subject_sort = strtolower(decodeHeader($subject, true, false));
-            if (preg_match("/^(?:(?:vedr|sv|re|aw|fw|fwd|\[\w\]):\s*)*\s*(.*)$/si", $subject_sort, $matches)){
-                $messages[$msgi]['SUBJECT-SORT'] = $matches[1];
+            $result = searchAlternativeRegularPattern($subject_sort);
+            if ($result !== false){
+                $messages[$msgi]['SUBJECT-SORT'] = $result;
             } else {
                 $messages[$msgi]['SUBJECT-SORT'] = $subject_sort;
             }
@@ -988,6 +989,15 @@ function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) 
     return $new_messages;
 }
 
+function searchAlternativeRegularPattern($subject) {
+    $nameSearch = array("vedr","sv","re","aw","fw","fwd");
+    foreach($nameSearch as $name){
+        if(strstr($subject,$name)){
+                return $name;
+        }
+    }
+    return false;
+}
 
 /**
  * Obsolete?

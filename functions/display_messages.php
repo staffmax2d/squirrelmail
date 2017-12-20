@@ -69,8 +69,10 @@ function logout_error( $errString, $errTitle = '' ) {
     }
 
     // load default theme if possible
-    if (!isset($color) && @file_exists($theme[$theme_default]['PATH']))
-        @include ($theme[$theme_default]['PATH']);
+    error_reporting(0);
+    if (!isset($color) && file_exists($theme[$theme_default]['PATH']))
+        error_reporting(0);
+        include ($theme[$theme_default]['PATH']);
 
     if ( !isset( $color ) ) {
         $color = array();

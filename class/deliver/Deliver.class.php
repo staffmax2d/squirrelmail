@@ -225,7 +225,7 @@ class Deliver {
 
         $last = false;
         for ($i=0, $entCount=count($message->entities);$i<$entCount;$i++) {
-            $msg = $this->writeBody($message->entities[$i], $stream, $length_raw, $boundary_new);
+            $this->writeBody($message->entities[$i], $stream, $length_raw, $boundary_new);
             if ($i == $entCount-1) $last = true;
         }
         if ($boundary && $last) {

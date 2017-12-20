@@ -76,7 +76,8 @@ function gettext_php_load_strings() {
     $filename .= $squirrelmail_language . '/LC_MESSAGES/' . 
         $gettext_php_domain . '.po';
     
-    $file = @fopen($filename, 'r');
+    error_reporting(0);
+    $file = fopen($filename, 'r');
     if ($file == false) {
         /* Uh-ho -- we can't load the file.  Just fake it.  :-)
            This is also for English, which doesn't use translations */

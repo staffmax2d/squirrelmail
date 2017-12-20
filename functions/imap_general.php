@@ -181,7 +181,7 @@ function sqimap_fread($imap_stream,$iSize,$filter=false,
            if (is_resource($outputstream)) {
                fwrite($outputstream,$sRead);
            } else if ($outputstream == 'php://stdout') {
-               echo $sRead;
+               echo htmlspecialchars($sRead);
            }
         }
         if ($no_return) {
@@ -492,22 +492,22 @@ function sqimap_login ($username, $password, $imap_server_address, $imap_port, $
           $imap_server_address = 'tls://' . $imap_server_address;
         }
 
-    $imap_stream = @fsockopen($imap_server_address, $imap_port, $error_number, $error_string, 15);
+    $imap_stream = pfsockopen($imap_server_address, $imap_port, $error_number, $error_string, 15);
 
     /* Do some error correction */
     if (!$imap_stream) {
         if (!$hide) {
             set_up_language($squirrelmail_language, true);
             require_once(SM_PATH . 'functions/display_messages.php');
+            $errorNum = htmlspecialchars("<br />\r\n$error_number : $error_string<br />\r\n");
             logout_error( sprintf(_("Error connecting to IMAP server: %s."), $imap_server_address).
-                "<br />\r\n$error_number : $error_string<br />\r\n",
+                $errorNum,
 		sprintf(_("Error connecting to IMAP server: %s."), $imap_server_address) );
         }
         exit;
     }
 
-    $server_info = fgets ($imap_stream, 1024);
-
+    $server_info = fgets (htmlspecialchars($imap_stream), 1024);
     /* Decrypt the password */
     $password = OneTimePadDecrypt($password, $onetimepad);
 

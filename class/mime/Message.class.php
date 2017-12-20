@@ -196,7 +196,7 @@ class Message {
      */
     function addRFC822Header($read) {
         $header = new Rfc822Header();
-        $this->rfc822_header = $header->parseHeader($read);
+        $header->parseHeader($read);
     }
 
     /**
@@ -374,15 +374,18 @@ class Message {
                         case 1:
                             /* multipart properties */
                             ++$i;
-                            $arg_a[] = $msg->parseProperties($read, $i);
+                            $composed = array($read,$i);
+                            $arg_a[] = $msg->parseProperties($composed);
                             ++$arg_no;
                             break;
                         case 2:
                             if (isset($msg->type0) && ($msg->type0 == 'multipart')) {
                                 ++$i;
-                                $arg_a[] = $msg->parseDisposition($read, $i);
+                                $composed = array($read,&$i);
+                                $arg_a[] = $msg->parseDisposition($composed);
                             } else { /* properties */
-                                $arg_a[] = $msg->parseProperties($read, $i);
+                                $composed = array($read,$i);
+                                $arg_a[] = $msg->parseProperties($composed);
                             }
                             ++$arg_no;
                             break;
@@ -407,13 +410,15 @@ class Message {
                             break;
                         case 8:
                             ++$i;
-                            $arg_a[] = $msg->parseDisposition($read, $i);
+                            $composed = array($read,&$i);
+                            $arg_a[] = $msg->parseDisposition($composed);
                             ++$arg_no;
                             break;
                         case 9:
                             ++$i;
                             if (($arg_a[0] == 'text') || (($arg_a[0] == 'message') && ($arg_a[1] == 'rfc822'))) {
-                                $arg_a[] = $msg->parseDisposition($read, $i);
+                                $composed = array($read,&$i);
+                                $arg_a[] = $msg->parseDisposition($composed);
                             } else {
                                 $arg_a[] = $msg->parseLanguage($read, $i);
                             }
@@ -522,7 +527,9 @@ class Message {
      * @param integer $i
      * @return array
      */
-    function parseProperties($read, &$i) {
+    function parseProperties($composed) {
+        $read = $composed[0];
+        $i = $composed[1];
         $properties = array();
         $prop_name = '';
 
@@ -771,13 +778,15 @@ class Message {
      * @param integer $i
      * @param object Disposition object or empty string
      */
-    function parseDisposition($read, &$i) {
+    function parseDisposition($composed) {
+        $read = $composed[0];
+        $i = $composed[1];
         $arg_a = array();
         for (; $read{$i} != ')'; ++$i) {
             switch ($read{$i}) {
                 case '"': $arg_a[] = $this->parseQuote($read, $i); break;
                 case '{': $arg_a[] = $this->parseLiteral($read, $i); break;
-                case '(': $arg_a[] = $this->parseProperties($read, $i); break;
+                case '(': $composed = array($read,$i);$arg_a[] = $this->parseProperties($composed); break;
                 default: break;
             }
         }
@@ -804,7 +813,7 @@ class Message {
             switch ($read{$i}) {
                 case '"': $arg_a[] = $this->parseQuote($read, $i); break;
                 case '{': $arg_a[] = $this->parseLiteral($read, $i); break;
-                case '(': $arg_a[] = $this->parseProperties($read, $i); break;
+                case '(': $composed = array($read,$i); $arg_a[] = $this->parseProperties($composed); break;
                 default: break;
             }
         }
@@ -829,7 +838,7 @@ class Message {
             switch ($read{$i}) {
                 case '"': $this->parseQuote($read, $i); break;
                 case '{': $this->parseLiteral($read, $i); break;
-                case '(': $this->parseProperties($read, $i); break;
+                case '(': $composed = array($read,$i); $this->parseProperties($composed); break;
                 default: break;
             }
         }

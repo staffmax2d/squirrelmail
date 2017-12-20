@@ -50,7 +50,7 @@ function sq_change_text_domain($domain_name, $directory='') {
     global $use_gettext;
     static $domains_already_seen = array();
 
-    $return_value = textdomain(NULL);
+    textdomain();
 
     // empty domain defaults to "squirrelmail"
     //
@@ -60,7 +60,7 @@ function sq_change_text_domain($domain_name, $directory='') {
     // $use_gettext is turned on
     //
     if (!$use_gettext && in_array($domain_name, $domains_already_seen)) {
-        textdomain($domain_name);
+        textdomain();
         return $return_value;
     }
 
@@ -69,7 +69,7 @@ function sq_change_text_domain($domain_name, $directory='') {
     if (empty($directory)) $directory = SM_PATH . 'locale/';
 
     sq_bindtextdomain($domain_name, $directory);
-    textdomain($domain_name);
+    textdomain();
 
     return $return_value;
 }
@@ -96,7 +96,7 @@ function sq_bindtextdomain($domain,$dir='') {
 
     if (empty($dir)) $dir = SM_PATH . 'locale/';
 
-    $dir = bindtextdomain($domain, $dir);
+     bindtextdomain();
 
     // set codeset in order to avoid gettext charset conversions
     if (function_exists('bind_textdomain_codeset')
@@ -393,8 +393,8 @@ function set_up_language($sm_language, $do_search = false, $default = false) {
          $use_gettext &&
          $sm_language != '' &&
          isset($languages[$sm_notAlias]['CHARSET']) ) {
-        bindtextdomain( 'squirrelmail', SM_PATH . 'locale/' );
-        textdomain( 'squirrelmail' );
+        bindtextdomain();
+        textdomain();
         if (function_exists('bind_textdomain_codeset')) {
             if ($sm_notAlias == 'ja_JP') {
                 bind_textdomain_codeset ("squirrelmail", 'EUC-JP');
@@ -620,7 +620,8 @@ function japanese_charset_xtra() {
     if (function_exists('mb_detect_encoding')) {
         switch (func_get_arg(0)) { /* action */
         case 'decode':
-            $detect_encoding = @mb_detect_encoding($ret);
+            error_reporting(0);
+            $detect_encoding = mb_detect_encoding($ret);
             if ($detect_encoding == 'JIS' ||
                 $detect_encoding == 'EUC-JP' ||
                 $detect_encoding == 'SJIS' ||
@@ -630,7 +631,8 @@ function japanese_charset_xtra() {
             }
             break;
         case 'encode':
-            $detect_encoding = @mb_detect_encoding($ret);
+            error_reporting(0);
+            $detect_encoding = mb_detect_encoding($ret);
             if ($detect_encoding == 'JIS' ||
                 $detect_encoding == 'EUC-JP' ||
                 $detect_encoding == 'SJIS' ||
@@ -676,8 +678,10 @@ function japanese_charset_xtra() {
         case 'decodeheader':
             $ret = str_replace("\t", "", $ret);
             if (preg_match('/=\?([^?]+)\?(q|b)\?([^?]+)\?=/i', $ret))
-                $ret = @mb_decode_mimeheader($ret);
-            $ret = @mb_convert_encoding($ret, 'EUC-JP', 'AUTO');
+                error_reporting(0);
+                $ret = mb_decode_mimeheader($ret);
+            error_reporting(0);
+            $ret = mb_convert_encoding($ret, 'EUC-JP', 'AUTO');
             break;
         case 'downloadfilename':
             $useragent = func_get_arg(2);

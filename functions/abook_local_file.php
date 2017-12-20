@@ -101,14 +101,13 @@ class abook_local_file extends addressbook_backend {
     function abook_local_file($param) {
         $this->sname = _("Personal address book");
         $this->umask = Umask();
-
+        try{
         if(is_array($param)) {
             if(empty($param['filename'])) {
-                return $this->set_error('Invalid parameters');
+                throw new Exception('Invalid parameters');
             }
             if(!is_string($param['filename'])) {
-                return $this->set_error($param['filename'] . ': '.
-                     _("Not a file name"));
+                throw new Exception('Not a file name');
             }
 
             $this->filename = $param['filename'];
@@ -139,8 +138,10 @@ class abook_local_file extends addressbook_backend {
         } else {
             $this->set_error('Invalid argument to constructor');
         }
-    }
-
+        }
+        catch (Exception $e) {
+            echo "Exception ".": ".$e->getMessage();
+        }
     /**
      * Open the addressbook file and store the file pointer.
      * Use $file as the file to open, or the class' own
@@ -170,7 +171,8 @@ class abook_local_file extends addressbook_backend {
 
         umask($this->umask);
         if (! $this->detect_writeable) {
-            $fh = @fopen($file,$fopenmode);
+            error_reporting(0);
+            $fh = fopen($file,$fopenmode);
             if ($fh) {
                 $this->filehandle = &$fh;
                 $this->filename = $file;
@@ -180,13 +182,15 @@ class abook_local_file extends addressbook_backend {
         } else {
             /* Open file. First try to open for reading and writing,
              * but fall back to read only. */
-            $fh = @fopen($file, 'a+');
+            error_reporting(0);
+            $fh = fopen($file, 'a+');
             if($fh) {
                 $this->filehandle = &$fh;
                 $this->filename   = $file;
                 $this->writeable  = true;
             } else {
-                $fh = @fopen($file, 'r');
+                error_reporting(0);
+                $fh = fopen($file, 'r');
                 if($fh) {
                     $this->filehandle = &$fh;
                     $this->filename   = $file;
@@ -201,7 +205,8 @@ class abook_local_file extends addressbook_backend {
 
     /** Close the file and forget the filehandle */
     function close() {
-        @fclose($this->filehandle);
+        error_reporting(0);
+        fclose($this->filehandle);
         $this->filehandle = 0;
         $this->filename   = '';
         $this->writable   = false;
@@ -231,7 +236,8 @@ class abook_local_file extends addressbook_backend {
      */
     function overwrite(&$rows) {
         $this->unlock();
-        $newfh = @fopen($this->filename.'.tmp', 'w');
+        error_reporting(0);
+        $newfh = fopen($this->filename.'.tmp', 'w');
 
         if(!$newfh) {
             return $this->set_error($this->filename. '.tmp:' . _("Open failed"));
@@ -250,11 +256,14 @@ class abook_local_file extends addressbook_backend {
         }
 
         fclose($newfh);
-        if (!@copy($this->filename . '.tmp' , $this->filename)) {
+        error_reporting(0);
+        if (!copy($this->filename . '.tmp' , $this->filename)) {
           return $this->set_error($this->filename . ':' . _("Unable to update"));
         }
-        @unlink($this->filename . '.tmp');
-        @chmod($this->filename, 0600);
+        error_reporting(0);
+        unlink($this->filename . '.tmp');
+        error_reporting(0);
+        chmod($this->filename, 0600);
         $this->unlock();
         $this->open(true);
         return true;
@@ -285,9 +294,11 @@ class abook_local_file extends addressbook_backend {
         if(!$this->open()) {
             return false;
         }
-        @rewind($this->filehandle);
+        error_reporting(0);
+        rewind($this->filehandle);
 
-        while ($row = @fgetcsv($this->filehandle, $this->line_length, '|')) {
+        error_reporting(0);
+        while ($row = fgetcsv($this->filehandle, $this->line_length, '|')) {
             if (count($row)<5) {
                 /** address book is corrupted. */
                 global $color;
@@ -296,7 +307,8 @@ class abook_local_file extends addressbook_backend {
             } else {
                 $line = join(' ', $row);
                 // errors on preg_match call are suppressed in order to prevent display of regexp compilation errors
-                if(@preg_match('/' . $expr . '/i', $line)) {
+                error_reporting(0);
+                if(preg_match('/' . $expr . '/i', $line)) {
                     array_push($res, array('nickname'  => $row[0],
                                            'name'      => $row[1] . ' ' . $row[2],
                                            'firstname' => $row[1],
@@ -335,9 +347,11 @@ class abook_local_file extends addressbook_backend {
         $value = strtolower($value);
 
         $this->open();
-        @rewind($this->filehandle);
+        error_reporting(0);
+        rewind($this->filehandle);
 
-        while ($row = @fgetcsv($this->filehandle, $this->line_length, '|')) {
+        error_reporting(0);
+        while ($row = fgetcsv($this->filehandle, $this->line_length, '|')) {
             if (count($row)<5) {
                 /** address book is corrupted. */
                 global $color;
@@ -372,9 +386,11 @@ class abook_local_file extends addressbook_backend {
 
         $res = array();
         $this->open();
-        @rewind($this->filehandle);
+        error_reporting(0);
+        rewind($this->filehandle);
 
-        while ($row = @fgetcsv($this->filehandle, $this->line_length, '|')) {
+        error_reporting(0);
+        while ($row = fgetcsv($this->filehandle, $this->line_length, '|')) {
             if (count($row)<5) {
                 /** address book is corrupted. */
                 global $color;
@@ -476,10 +492,12 @@ class abook_local_file extends addressbook_backend {
         }
 
         /* Read file into memory, ignoring nicknames to delete */
-        @rewind($this->filehandle);
+        error_reporting(0);
+        rewind($this->filehandle);
         $i = 0;
         $rows = array();
-        while($row = @fgetcsv($this->filehandle, $this->line_length, '|')) {
+        error_reporting(0);
+        while($row = fgetcsv($this->filehandle, $this->line_length, '|')) {
             if(!in_array($row[0], $alias)) {
                 $rows[$i++] = $row;
             }
@@ -541,10 +559,12 @@ class abook_local_file extends addressbook_backend {
         /* Read file into memory, modifying the data for the
          * user identified by $alias */
         $this->open(true);
-        @rewind($this->filehandle);
+        error_reporting(0);
+        rewind($this->filehandle);
         $i = 0;
         $rows = array();
-        while($row = @fgetcsv($this->filehandle, $this->line_length, '|')) {
+        error_reporting(0);
+        while($row = fgetcsv($this->filehandle, $this->line_length, '|')) {
             if(strtolower($row[0]) != strtolower($alias)) {
                 $rows[$i++] = $row;
             } else {
@@ -580,4 +600,5 @@ class abook_local_file extends addressbook_backend {
         return $value;
     }
 
-} /* End of class abook_local_file */
+    } /* End of class abook_local_file */
+}

@@ -123,13 +123,18 @@ main () {
    while (fgets(instr, MAXSTR, stdin) != NULL) {
       instr[strlen(instr)-1] = 0;
       for (loop1 = 0; loop1 < numrbls; loop1++) {
+         
          tIP = (iplist)malloc(sizeof(struct ipnode));
-         tIP->IP = (char *)malloc(strlen(instr)+strlen(dnsrbls[loop1])+2);
-         strcpy (tIP->IP, instr);
-	 strcat (tIP->IP, dnsrbls[loop1]);
-         tIP->next = IPs;
-         IPs = tIP;
-         numqueries++;
+         if(!tIP==NULL){
+            tIP->IP = (char *)malloc(strlen(instr)+strlen(dnsrbls[loop1])+2);
+            strcpy (tIP->IP, instr);
+            strcat (tIP->IP, dnsrbls[loop1]);
+            tIP->next = IPs;
+            IPs = tIP;
+            numqueries++;
+         }else{
+             exit(0);
+         }
       }
    }
 
@@ -143,9 +148,17 @@ main () {
 //   exit (0);
 
    mutexp=(pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-   pthread_mutex_init(mutexp, NULL);
-   mutexoutput=(pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-   pthread_mutex_init(mutexoutput, NULL);
+   if(!mutexp==NULL){
+    pthread_mutex_init(mutexp, NULL);
+    mutexoutput=(pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    if(!mutexoutput==NULL){
+        pthread_mutex_init(mutexoutput, NULL);
+        }else{
+            exit(0)
+        }
+   }else{
+       exit(0);
+   }
 
    numthreads = 0; // number of threads created successfully
    for (loop1 = 0; ((loop1<MAXTHREADS) && (loop1<numqueries)); loop1++) {

@@ -177,7 +177,8 @@ sqsession_is_active();
 /* if running with magic_quotes_gpc then strip the slashes
    from POST and GET global arrays */
 
-if (function_exists('get_magic_quotes_gpc') && @get_magic_quotes_gpc()) {
+error_reporting(0);
+if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
     sqstripslashes($_GET);
     sqstripslashes($_POST);
 }
@@ -437,7 +438,8 @@ function sqsession_destroy() {
     $sessid = session_id();
     if (!empty( $sessid )) {
         $_SESSION = array();
-        @session_destroy();
+        error_reporting(0);
+        session_destroy();
     }
 
 }
@@ -470,7 +472,8 @@ function sqsession_start() {
     global $base_uri;
 
     session_set_cookie_params (0, $base_uri);
-    @session_start();
+    error_reporting(0);
+    session_start();
     // could be: sq_call_function_suppress_errors('session_start');
     $session_id = session_id();
 
@@ -613,7 +616,8 @@ function is_ssl_secured_connection()
  */
 function file_has_long_lines($filename, $max_length) {
 
-    $FILE = @fopen($filename, 'rb');
+    error_reporting(0);
+    $FILE = fopen($filename, 'rb');
 
     if ($FILE) {
         while (!feof($FILE)) {
