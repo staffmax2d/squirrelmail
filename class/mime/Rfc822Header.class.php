@@ -334,6 +334,7 @@ class Rfc822Header {
     function getAddressTokens($address) {
         $aTokens = array();
         $aAddress = array();
+        print_r($aAddress);
         $aSpecials = array('(' ,'<' ,',' ,';' ,':');
         $aReplace =  array(' (',' <',' ,',' ;',' :');
         $address = str_replace($aSpecials,$aReplace,$address);
@@ -466,6 +467,7 @@ class Rfc822Header {
      */
     function createAddressObject(&$aStack,&$aComment,&$sEmail,$sGroup='') {
         //$aStack=explode(' ',implode('',$aStack));
+        echo $sGroup;
         if (!$sEmail) {
             while (count($aStack) && !$sEmail) {
                 $sEmail = trim(array_pop($aStack));
@@ -520,6 +522,7 @@ class Rfc822Header {
     function parseAddress($address,$ar=false,$aAddress=array(),$sGroup='',$sHost='',$lookup=false) {
         $aTokens = $this->getAddressTokens($address);
         $sPersonal = $sEmail = $sComment = $sGroup = '';
+        echo $sPersonal;
         $aStack = $aComment = array();
         foreach ($aTokens as $sToken) {
             $cChar = $sToken{0};
@@ -543,8 +546,8 @@ class Rfc822Header {
                     $aAddress[] = $this->createAddressObject($aStack,$aComment,$sEmail,$sGroup);
                     $sGroup = '';
                     $aStack = $aComment = array();
-                    break;
                 }
+                break;
             case ',':
                 $aAddress[] = $this->createAddressObject($aStack,$aComment,$sEmail,$sGroup);
                 break;
@@ -703,6 +706,7 @@ class Rfc822Header {
             $charset = substr($value,0,strpos($value,"'"));
             $value = substr($value,strlen($charset)+1);
             $language = substr($value,0,strpos($value,"'"));
+            echo $language;
             $value = substr($value,strlen($charset)+1);
             /* FIXME: What's the status of charset decode with language information ????
              * Maybe language information contains only ascii text and charset_decode() 
@@ -932,6 +936,7 @@ class Rfc822Header {
             foreach($address as $argument) {
                 $match = $this->findAddress($argument, true);
                 $last = end($match);
+                echo $last;
                 if ($match[1]) {
                     return $i;
                 } else {
@@ -992,9 +997,11 @@ class Rfc822Header {
      * @return array media properties
      * @todo check use of media type arguments
      */
-    function getContentType($type0, $type1) {
+    function getContentType() {
         $type0 = $this->content_type->type0;
+        echo $type0;
         $type1 = $this->content_type->type1;
+        echo $type1;
         return $this->content_type->properties;
     }
 }

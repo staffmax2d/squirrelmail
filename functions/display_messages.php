@@ -15,7 +15,7 @@
 /**
  * including plugin functions
  */
-require_once(SM_PATH . 'functions/plugin.php');
+(require_once SM_PATH . 'functions/plugin.php');
 
 function error_message($message, $mailbox, $sort, $startMessage, $color) {
 
@@ -46,7 +46,7 @@ function logout_error( $errString, $errTitle = '' ) {
            $hide_sm_attributions, $version, $squirrelmail_language, 
            $color, $theme, $theme_default;
 
-    include_once( SM_PATH . 'functions/page_header.php' );
+    (include_once SM_PATH . 'functions/page_header.php' );
 
     $base_uri = sqm_baseuri();
 
@@ -72,7 +72,7 @@ function logout_error( $errString, $errTitle = '' ) {
     error_reporting(0);
     if (!isset($color) && file_exists($theme[$theme_default]['PATH']))
         error_reporting(0);
-        include ($theme[$theme_default]['PATH']);
+        (include $theme[$theme_default]['PATH']);
 
     if ( !isset( $color ) ) {
         $color = array();
@@ -142,7 +142,7 @@ function error_box($string, $color) {
     /* check if the page header has been sent; if not, send it! */
     if(!isset($pageheader_sent) && !$pageheader_sent) {
         /* include this just to be sure */
-        include_once( SM_PATH . 'functions/page_header.php' );
+        (include_once SM_PATH . 'functions/page_header.php' );
         displayHtmlHeader($org_title.': '.$err);
         $pageheader_sent = TRUE;
         echo "<body text=\"$color[8]\" bgcolor=\"$color[4]\" link=\"$color[7]\" vlink=\"$color[7]\" alink=\"$color[7]\">\n\n";

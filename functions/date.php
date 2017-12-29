@@ -16,7 +16,7 @@
  */
 
 /** Load up some useful constants */
-require_once(SM_PATH . 'functions/constants.php');
+(require_once SM_PATH . 'functions/constants.php');
 
 /**
  * Corrects a time stamp to be the local time.

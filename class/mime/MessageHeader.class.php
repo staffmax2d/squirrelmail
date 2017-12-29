@@ -84,6 +84,7 @@ class MessageHeader {
      */
     function getParameter($p) {
         $value = strtolower($p);
+        echo $value;
         return (isset($this->parameters[$p]) ? $this->parameters[$p] : '');
     }
 

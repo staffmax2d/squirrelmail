@@ -17,7 +17,7 @@ if (!defined('SM_PATH')) {
     define('SM_PATH','../');
 }
 
-include_once(SM_PATH . 'include/load_prefs.php');
+(include_once SM_PATH . 'include/load_prefs.php');
 
 /**
 * Returns an array of all the identities.

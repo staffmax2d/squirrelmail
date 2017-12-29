@@ -1,5 +1,5 @@
 <?php
-
+(require_once SM_PATH . 'class/MyException.php');
 /**
  * abook_local_file.php
  *
@@ -99,15 +99,15 @@ class abook_local_file extends addressbook_backend {
      * @return bool
      */
     function abook_local_file($param) {
-        $this->sname = _("Personal address book");
+         $this->sname = _("Personal address book");
         $this->umask = Umask();
         try{
         if(is_array($param)) {
             if(empty($param['filename'])) {
-                throw new Exception('Invalid parameters');
+                throw new InvalidParException('Invalid parameters');
             }
             if(!is_string($param['filename'])) {
-                throw new Exception('Not a file name');
+                throw new InvalidFileNameException('Not a file name');
             }
 
             $this->filename = $param['filename'];
@@ -139,9 +139,16 @@ class abook_local_file extends addressbook_backend {
             $this->set_error('Invalid argument to constructor');
         }
         }
-        catch (Exception $e) {
+        catch (InvalidFileNameException $e) {
             echo "Exception ".": ".$e->getMessage();
         }
+        
+         catch (InvalidParException $e) {
+            echo "Exception ".": ".$e->getMessage();
+        }
+        
+    }
+        
     /**
      * Open the addressbook file and store the file pointer.
      * Use $file as the file to open, or the class' own
@@ -601,4 +608,3 @@ class abook_local_file extends addressbook_backend {
     }
 
     } /* End of class abook_local_file */
-}

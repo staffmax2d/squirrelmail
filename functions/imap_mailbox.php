@@ -13,7 +13,7 @@
  */
 
 /** UTF7 support */
-require_once(SM_PATH . 'functions/imap_utf7_local.php');
+(require_once SM_PATH . 'functions/imap_utf7_local.php');
 
 global $boxesnew;
 
@@ -86,6 +86,7 @@ function isBoxBelow( $subbox, $parentbox ) {
     /* check for delimiter */
         if (substr($parentbox,-1) != $delimiter) {
             $parentbox.=$delimiter;
+            echo $parentbox;
         }
         if (substr($subbox,0,strlen($parentbox)) == $parentbox) {
             return true;
@@ -195,7 +196,8 @@ function isDraftMailbox($box,$include_subs=true) {
 /**
  * Expunges a mailbox, ie. delete all contents.
  */
-function sqimap_mailbox_expunge ($imap_stream, $mailbox, $handle_errors = true, $id='') {
+function sqimap_mailbox_expunge ($imap_stream, $mailbox='', $handle_errors = true, $id='') {
+    echo $mailbox;
     global $uid_support;
     if ($id) {
         if (is_array($id)) {
@@ -253,7 +255,7 @@ function sqimap_mailbox_select ($imap_stream, $mailbox) {
      */
     if (strstr($mailbox, '../') || substr($mailbox, 0, 1) == '/') {
         global $color;
-        include_once(SM_PATH . 'functions/display_messages.php');
+        (include_once SM_PATH . 'functions/display_messages.php');
         error_box(sprintf(_("Invalid mailbox name: %s"),htmlspecialchars($mailbox)),$color);
         sqimap_logout($imap_stream);
         die('</body></html>');
@@ -303,6 +305,7 @@ function sqimap_mailbox_create ($imap_stream, $mailbox, $type) {
 
     $read_ary = sqimap_run_command($imap_stream, "CREATE \"$create_mailbox\"",
                                    true, $response, $message);
+    echo $read_ary;
     sqimap_subscribe ($imap_stream, $mailbox);
 }
 
@@ -312,6 +315,7 @@ function sqimap_mailbox_create ($imap_stream, $mailbox, $type) {
 function sqimap_subscribe ($imap_stream, $mailbox) {
     $read_ary = sqimap_run_command($imap_stream, "SUBSCRIBE \"$mailbox\"",
                                    true, $response, $message);
+    echo $read_ary;
 }
 
 /**
@@ -320,6 +324,7 @@ function sqimap_subscribe ($imap_stream, $mailbox) {
 function sqimap_unsubscribe ($imap_stream, $mailbox) {
     $read_ary = sqimap_run_command($imap_stream, "UNSUBSCRIBE \"$mailbox\"",
                                    false, $response, $message);
+    echo $read_ary;
 }
 
 /**
@@ -331,11 +336,13 @@ function sqimap_mailbox_delete ($imap_stream, $mailbox) {
     if (sqimap_mailbox_exists($imap_stream, $mailbox)) {
         $read_ary = sqimap_run_command($imap_stream, "DELETE \"$mailbox\"",
                                        true, $response, $message);
+        echo $read_ary;
         if ($response !== 'OK') {
             // subscribe again
             sqimap_subscribe ($imap_stream, $mailbox);
         } else {
             do_hook_function('rename_or_delete_folder', $args = array($mailbox, 'delete', ''));
+            echo do_function;
             removePref($data_dir, $username, "thread_$mailbox");
             removePref($data_dir, $username, "collapse_folder_$mailbox");
         }
@@ -372,6 +379,7 @@ function sqimap_mailbox_rename( $imap_stream, $old_name, $new_name ) {
         $boxesall = sqimap_mailbox_list_all($imap_stream);
         $cmd = 'RENAME "' . $old_name . '" "' . $new_name . '"';
         $data = sqimap_run_command($imap_stream, $cmd, true, $response, $message);
+        echo $data;
         sqimap_unsubscribe($imap_stream, $old_name.$postfix);
         $oldpref_thread = getPref($data_dir, $username, 'thread_'.$old_name.$postfix);
         $oldpref_collapse = getPref($data_dir, $username, 'collapse_folder_'.$old_name.$postfix);
@@ -381,6 +389,7 @@ function sqimap_mailbox_rename( $imap_stream, $old_name, $new_name ) {
         setPref($data_dir, $username, 'thread_'.$new_name.$postfix, $oldpref_thread);
         setPref($data_dir, $username, 'collapse_folder_'.$new_name.$postfix, $oldpref_collapse);
         do_hook_function('rename_or_delete_folder',$args = array($old_name, 'rename', $new_name));
+        echo do_hook_function;
         $l = strlen( $old_name ) + 1;
         $p = 'unformatted';
 
@@ -603,9 +612,10 @@ function sqimap_mailbox_list($imap_stream, $force=false) {
                $move_to_trash, $move_to_sent, $save_as_draft,
                $delimiter, $noselect_fix_enable;
         $inbox_in_list = false;
+        echo $inbox_in_list;
         $inbox_subscribed = false;
 
-        require_once(SM_PATH . 'include/load_prefs.php');
+        (require_once SM_PATH . 'include/load_prefs.php');
 
         if ($noselect_fix_enable) {
             $lsub_args = "LSUB \"$folder_prefix\" \"*%\"";
@@ -771,10 +781,13 @@ function sqimap_mailbox_list_all($imap_stream) {
 
     $ssid = sqimap_session_id();
     $lsid = strlen( $ssid );
+    include_once __DIR__ . '/libs/csrf/csrfprotector.php';
+    csrfProtector::init();
     fputs ($imap_stream, $ssid . " LIST \"$folder_prefix\" *\r\n");
     $read_ary = sqimap_read_data ($imap_stream, $ssid, true, $response, $message);
     $g = 0;
     $phase = 'inbox';
+    echo $phase;
     $fld_pre_length = strlen($folder_prefix);
 
     for ($i = 0, $cnt = count($read_ary); $i < $cnt; $i++) {

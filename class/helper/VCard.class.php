@@ -26,7 +26,8 @@ class VCard {
      * @param array $value_array
      * @return string
      */
-    function create_vcard ($value_array) {
+    function create_vcard ($value_array='') {
+        echo $value_array;
         return $vcard;
     }
 
@@ -36,7 +37,8 @@ class VCard {
      * @param string $vcard
      * @return array
      */
-    function parse_vcard ($vcard) {
+    function parse_vcard ($vcard='') {
+        echo $vcard;
         return $array;
     }
 }

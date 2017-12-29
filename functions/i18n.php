@@ -20,7 +20,7 @@
 if (!defined('SM_PATH')) define('SM_PATH','../');
 
 /** Everything uses global.php... */
-require_once(SM_PATH . 'functions/global.php');
+(require_once SM_PATH . 'functions/global.php');
 
 /**
  * Wrapper for textdomain(), bindtextdomain() and
@@ -68,7 +68,8 @@ function sq_change_text_domain($domain_name, $directory='') {
 
     if (empty($directory)) $directory = SM_PATH . 'locale/';
 
-    sq_bindtextdomain($domain_name, $directory);
+    $dir=sq_bindtextdomain($domain_name, $directory);
+    echo $dir;
     textdomain();
 
     return $return_value;
@@ -200,7 +201,7 @@ function charset_decode ($charset, $string, $force_decode=false, $save_html=fals
     $decode=fixcharset($charset);
     $decodefile=SM_PATH . 'functions/decode/' . $decode . '.php';
     if ($decode != 'index' && file_exists($decodefile)) {
-      include_once($decodefile);
+      (include_once $decodefile);
       $ret = call_user_func('charset_decode_'.$decode, $string, $save_html);
     } else {
       $ret = $string;
@@ -223,12 +224,12 @@ function charset_encode($string,$charset,$htmlencode=true) {
     $encode=fixcharset($charset);
     $encodefile=SM_PATH . 'functions/encode/' . $encode . '.php';
     if ($encode != 'index' && file_exists($encodefile)) {
-        include_once($encodefile);
+        (include_once $encodefile);
         $ret = call_user_func('charset_encode_'.$encode, $string);
     } elseif(file_exists(SM_PATH . 'functions/encode/us_ascii.php')) {
         // function replaces all 8bit html entities with question marks.
         // it is used when other encoding functions are unavailable
-        include_once(SM_PATH . 'functions/encode/us_ascii.php');
+        (include_once SM_PATH . 'functions/encode/us_ascii.php');
         $ret = charset_encode_us_ascii($string);
     } else {
         /**
@@ -561,6 +562,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     case "windows-1257":
         if ( $input_charset == "iso-8859-13" ||
              $input_charset == "iso-8859-4" ) {
@@ -568,6 +570,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     case "iso-8859-4":
         if ( $input_charset == "iso-8859-13" ||
              $input_charset == "windows-1257" ) {
@@ -575,6 +578,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     case "iso-8859-5":
         if ( $input_charset == "windows-1251" ||
              $input_charset == "koi8-r" ||
@@ -583,6 +587,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     case "iso-8859-13":
         if ( $input_charset == "iso-8859-4" ||
              $input_charset == "windows-1257" ) {
@@ -590,6 +595,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     case "koi8-r":
         if ( $input_charset == "windows-1251" ||
              $input_charset == "iso-8859-5" ||
@@ -598,6 +604,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     case "koi8-u":
         if ( $input_charset == "windows-1251" ||
              $input_charset == "iso-8859-5" ||
@@ -606,6 +613,7 @@ function is_conversion_safe($input_charset) {
         } else {
             return false;
         }
+        break;
     default:
         return false;
     }
@@ -703,6 +711,7 @@ function japanese_charset_xtra() {
                 "\xa8\xa1\xa9\xa1\xcf\xa1\xd1";
             $no_end = "\x5c\x24\x28\x5b\x7b\xa1\xf2\x5c\xa1\xc6\xa1\xc8\xa1\xd2\xa1" .
                 "\xd4\xa1\xd6\xa1\xd8\xa1\xda\xa1\xcc\xa1\xf0\xa1\xca\xa1\xce\xa1\xd0\xa1\xef";
+            echo $no_end;
             $wrap = func_get_arg(2);
 
             if (strlen($ret) >= $wrap &&
@@ -1126,7 +1135,7 @@ if ($gettext_flags == 7) {
 /* If we can fake gettext, try that */
 elseif ($gettext_flags == 0) {
     $use_gettext = true;
-    include_once(SM_PATH . 'functions/gettext.php');
+    (include_once SM_PATH . 'functions/gettext.php');
 } else {
     /* Uh-ho.  A weird install */
     if (! $gettext_flags & 1) {

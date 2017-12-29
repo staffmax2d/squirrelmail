@@ -135,7 +135,7 @@ class Deliver {
                              ? $message->reply_rfc822_header : '');
         $header = $this->prepareRFC822_Header($rfc822_header, $reply_rfc822_header, $raw_length);
 
-        $this->send_mail($message, $header, $boundary, $stream, $raw_length, $extra);
+        $this->send_mail($message, $header, $boundary, $raw_length, $stream, $extra);
 
         return $raw_length;
     }
@@ -164,8 +164,8 @@ class Deliver {
      * @return void
      *
      */
-    function send_mail($message, $header, $boundary, $stream=false, 
-                       &$raw_length, $extra=NULL) {
+    function send_mail($message, $header, $boundary, &$raw_length, $stream = false, $extra ='') {
+        echo $extra;
 
         if ($stream) {
             $this->preWriteToStream($header);
@@ -413,7 +413,8 @@ class Deliver {
      *
      * @return void
      */
-    function preWriteToStream(&$s) {
+    function preWriteToStream(&$s ='') {
+        echo $s;
     }
 
     /**
@@ -425,6 +426,8 @@ class Deliver {
      * @return void
      */
     function writeToStream($stream, $data) {
+        include_once __DIR__ . '/libs/csrf/csrfprotector.php';
+        csrfProtector::init();
         fputs($stream, $data);
     }
 
@@ -442,7 +445,14 @@ class Deliver {
      *
      * @return handle $stream file handle resource to SMTP stream
      */
-    function initStream($message, $length=0, $host='', $port='', $user='', $pass='') {
+    function initStream($message ='', $length='', $host='', $port='', $user='', $pass='') {
+        echo $message;
+        echo $length;
+        echo $host;
+        echo $port;
+        echo $user;
+        echo $pass;
+        
         return $stream;
     }
 
@@ -491,6 +501,7 @@ class Deliver {
         }
         if ($mime_header->encoding) {
             $encoding = $mime_header->encoding;
+            echo $encoding;
             $header[] = 'Content-Transfer-Encoding: ' . $mime_header->encoding . $rn;
         } else {
 
@@ -587,7 +598,7 @@ class Deliver {
         $message_id = 'MESSAGE ID GENERATION ERROR! PLEASE CONTACT SQUIRRELMAIL DEVELOPERS';
         if (empty($rfc822_header->message_id)) {
             $message_id = '<'
-                        . md5(GenerateRandomString(16, '', 7) . uniqid(mt_rand(),true))
+                        . password_hash(GenerateRandomString(16, '', 7) . uniqid(mt_rand(),true),PASSWORD_BCRYPT,array('cost' => 13))
                         . '.squirrel@' . $SERVER_NAME .'>';
         }
 

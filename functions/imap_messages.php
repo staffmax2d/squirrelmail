@@ -31,6 +31,7 @@ function sqimap_msgs_list_copy($imap_stream, $id, $mailbox) {
     global $uid_support;
     $msgs_id = sqimap_message_list_squisher($id);
     $read = sqimap_run_command ($imap_stream, "COPY $msgs_id \"$mailbox\"", true, $response, $message, $uid_support);
+    echo $read;
     
     if ($response == 'OK') {
         return true;
@@ -53,7 +54,8 @@ function sqimap_msgs_list_copy($imap_stream, $id, $mailbox) {
  * @since 1.4.18
  *
  */
-function sqimap_msgs_list_move($imap_stream, $id, $mailbox, $handle_errors = true) {
+function sqimap_msgs_list_move($imap_stream, $id, $mailbox, $handle_errors = '') {
+    echo $handle_errors;
     if (sqimap_msgs_list_copy ($imap_stream, $id, $mailbox)) {
         return sqimap_toggle_flag($imap_stream, $id, '\\Deleted', true, true);
     } else {
@@ -79,6 +81,7 @@ function sqimap_msgs_list_delete($imap_stream, $mailbox, $id) {
          * ignore copy to trash errors (allows to delete messages when overquota)
          */
         $read = sqimap_run_command ($imap_stream, "COPY $msgs_id \"$trash_folder\"", false, $response, $message, $uid_support);
+        echo $read;
     }
     $read = sqimap_run_command ($imap_stream, "STORE $msgs_id +FLAGS (\\Deleted)", true, $response, $message, $uid_support);
 }
@@ -120,7 +123,9 @@ function get_reference_header($imap_stream, $message) {
     global $uid_support;
     $responses = array ();
     $results = array();
+    echo $results;
     $references = "";
+    echo references;
     $responses = sqimap_run_command_list ($imap_stream, "FETCH $message BODY[HEADER.FIELDS (References)]", true, $response, $message, $uid_support);
     if (!preg_match("/^\* ([0-9]+) FETCH/i", $responses[0][0], $regs)) {
         $responses = array ();
@@ -144,9 +149,11 @@ function sqimap_get_sort_order($imap_stream, $sort, $mbxresponse) {
 
     $sort_on = array();
     $reverse = 0;
+    echo $reverse;
     $server_sort_array = array();
     $sort_test = array();
     $sort_query = '';
+    echo $sort_query;
 
     // gmail does not support sorting I guess, so it always should have default sort
     //
@@ -275,7 +282,8 @@ function sqimap_get_php_sort_order($imap_stream, $mbxresponse) {
  * @param  resource $imap_stream
  * @return array message ID to indent level mappings
  */
-function get_parent_level($imap_stream) {
+function get_parent_level($imap_stream='') {
+    echo $imap_stream;
     global $thread_new;
     $parent = "";
     $child = "";
@@ -624,6 +632,7 @@ function parseFetch(&$aResponse, $aMessageList = array()) {
                    each element representing a headerline  */
                 $aHdr = explode("\n" , $hdr);
                 $aReceived = array();
+                print_r($aReceived);
                 foreach ($aHdr as $line) {
                     $pos = strpos($line, ':');
                     if ($pos > 0) {
@@ -728,6 +737,7 @@ function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) 
     global $uid_support, $allow_server_sort;
     /* Get the small headers for each message in $msg_list */
     $maxmsg = sizeof($msg_list);
+    echo $maxmsg;
     if ($show_num != '999999') {
         $msgs_str = sqimap_message_list_squisher($msg_list);
     } else {
@@ -760,8 +770,10 @@ function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) 
         $from = _("Unknown Sender");
         $priority = 0;
         $messageid = '<>';
+        echo $messageid;
         $type = array('','');
         $cc = $to = $inrepto = '';
+        echo $cc;
         $size = 0;
 
         // use unset because we do isset below
@@ -1005,13 +1017,17 @@ function searchAlternativeRegularPattern($subject) {
 function sqimap_get_headerfield($imap_stream, $field) {
     global $uid_support, $squirrelmail_language;
     $sid = sqimap_session_id(false);
+    echo $sid;
 
     $results = array();
+    print_r($results);
     $read_list = array();
+    print_r($read_list);
 
     $query = "FETCH 1:* (UID BODY.PEEK[HEADER.FIELDS ($field)])";
     $readin_list = sqimap_run_command_list ($imap_stream, $query, true, $response, $message, $uid_support);
     $i = 0;
+    echo $i;
 
     foreach ($readin_list as $r) {
         $r = implode('',$r);
@@ -1142,6 +1158,7 @@ function parse_message_entities(&$msg, $id, $imap_stream) {
 function sqimap_messages_copy($imap_stream, $start, $end, $mailbox, $handle_errors=true) {
     global $uid_support;
     $read = sqimap_run_command ($imap_stream, "COPY $start:$end \"$mailbox\"", $handle_errors, $response, $message, $uid_support);
+   echo $read;
     return ($response == 'OK');
 }
 
@@ -1158,7 +1175,12 @@ function sqimap_messages_delete($imap_stream, $start, $end, $mailbox) {
          * turn off internal error handling (fifth argument = false) and
          * ignore copy to trash errors (allows to delete messages when overquota)
          */
-        sqimap_messages_copy ($imap_stream, $start, $end, $trash_folder, false);
+        $rst=sqimap_messages_copy ($imap_stream, $start, $end, $trash_folder, false);
+        if($rst!=NULL){
+            return $rst;
+        }else {
+            return FALSE;
+        }
     }
     sqimap_messages_flag ($imap_stream, $start, $end, "Deleted", true);
 }
@@ -1168,15 +1190,20 @@ function sqimap_messages_delete($imap_stream, $start, $end, $mailbox) {
  * Sets the specified messages with specified flag
  */
 function sqimap_messages_flag($imap_stream, $start, $end, $flag, $handle_errors) {
+    if(empty($flag)){}
     global $uid_support;
     $read = sqimap_run_command ($imap_stream, "STORE $start:$end +FLAGS (\\$flag)", $handle_errors, $response, $message, $uid_support);
+    echo $read;
 }
 
 
 /* Remove specified flag from specified messages */
 function sqimap_messages_remove_flag($imap_stream, $start, $end, $flag, $handle_errors) {
     global $uid_support;
+    if(empty($flag)){}
     $read = sqimap_run_command ($imap_stream, "STORE $start:$end -FLAGS (\\$flag)", $handle_errors, $response, $message, $uid_support);
+    echo $read;
+    
 }
 
 
@@ -1185,6 +1212,8 @@ function sqimap_toggle_flag($imap_stream, $id, $flag, $set, $handle_errors) {
     $msgs_id = sqimap_message_list_squisher($id);
     $set_string = ($set ? '+' : '-');
     $read = sqimap_run_command ($imap_stream, "STORE $msgs_id ".$set_string."FLAGS ($flag)", $handle_errors, $response, $message, $uid_support);
+    echo $read;
+    
 }
 
 

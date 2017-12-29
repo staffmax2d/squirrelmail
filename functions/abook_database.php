@@ -1,7 +1,6 @@
 <?php
 
-
-
+(require_once SM_PATH . 'class/MyException.php');
 /**
  * abook_database.php
  *
@@ -13,9 +12,9 @@
  */
 
 /** Needs the DB functions */
-if (!include_once('DB.php')) {
+if (!(include_once 'DB.php')) {
     // same error also in db_prefs.php
-    require_once(SM_PATH . 'functions/display_messages.php');
+    (require_once SM_PATH . 'functions/display_messages.php');
     $error  = _("Could not include PEAR database functions required for the database backend.") . "<br />\n";
     $error .= sprintf(_("Is PEAR installed, and is the include path set correctly to find %s?"),
                         '<tt>DB.php</tt>') . "<br />\n";
@@ -110,7 +109,7 @@ class abook_database extends addressbook_backend {
             if (empty($param['dsn']) ||
                 empty($param['table']) ||
                 empty($param['owner'])) {
-                throw new Exception("Parameter cannot be null");
+                throw new NullParException("Parameter cannot be null");
             }
 
             $this->dsn   = $param['dsn'];
@@ -132,13 +131,21 @@ class abook_database extends addressbook_backend {
             $this->open(true);
         }
         else {
-            throw new Exception('Invalid argument to constructor');
+            throw new InvalidArgException('Invalid argument to constructor');
         }
         }
     
-        catch (Exception $e) {
+        catch (InvalidArgException $e) {
             echo "Exception ".": ".$e->getMessage();
         }
+        
+        catch (NullParException $e) {
+            echo "Exception ".": ".$e->getMessage();
+        }
+        
+    }
+        
+    
 
     /**
      * Open the database.
@@ -497,7 +504,7 @@ class abook_database extends addressbook_backend {
         }
         return true;
     }
-} /* End of class abook_database */
+ /* End of class abook_database */
 
 // vim: et ts=4
 }

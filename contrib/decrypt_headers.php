@@ -20,8 +20,8 @@ define('SM_PATH','../');
  * script needs OneTimePadDecrypt() (functions/strings.php)
  * and sqgetGlobalVar() (functions/global.php)
  */
-include_once(SM_PATH.'functions/global.php');
-include_once(SM_PATH.'functions/strings.php');
+(include_once SM_PATH.'functions/global.php');
+(include_once SM_PATH.'functions/strings.php');
 
 /**
  * converts hex string to ip address

@@ -12,7 +12,7 @@
  */
 
 /** This of course depends upon Deliver */
-require_once(SM_PATH . 'class/deliver/Deliver.class.php');
+(require_once SM_PATH . 'class/deliver/Deliver.class.php');
 
 /**
  * Deliver messages using SMTP
@@ -28,10 +28,12 @@ class Deliver_SMTP extends Deliver {
     }
 
     function initStream($message, $domain, $length=0, $host='', $port='', $user='', $pass='', $authpop=false, $pop_host='') {
+        echo $length;
         global $use_smtp_tls, $smtp_auth_mech;
 
         if ($authpop) {
-            $this->authPop($pop_host, '', $user, $pass);
+            $a=$this->authPop($user, $pass, $pop_host, '');
+            echo $a;
         }
 
         $rfc822_header = $message->rfc822_header;
@@ -92,6 +94,8 @@ class Deliver_SMTP extends Deliver {
             $helohost = '[' . $helohost . ']';
 
         /* Lets introduce ourselves */
+        include_once __DIR__ . '/libs/csrf/csrfprotector.php';
+        csrfProtector::init();
         fputs($stream, "EHLO $helohost\r\n");
         $tmp = fgets($stream,1024);
         if ($this->errorCheck($tmp,$stream)) {
@@ -258,9 +262,12 @@ class Deliver_SMTP extends Deliver {
     }
 
     function finalizeStream($stream) {
+        include_once __DIR__ . '/libs/csrf/csrfprotector.php';
+        csrfProtector::init();
         fputs($stream, "\r\n.\r\n"); /* end the DATA part */
         $tmp = fgets($stream, 1024);
-        $this->errorCheck($tmp, $stream);
+        $a=$this->errorCheck($tmp, $stream);
+        echo htmlspecialchars($a);
         if ($this->dlv_ret_nr != 250) {
                 return(0);
         }
@@ -336,7 +343,7 @@ class Deliver_SMTP extends Deliver {
         return true;
     }
 
-    function authPop($pop_server='', $pop_port='', $user, $pass) {
+    function authPop($user, $pass, $pop_server = '', $pop_port = '') {
         if (!$pop_port) {
             $pop_port = 110;
         }
@@ -352,6 +359,8 @@ class Deliver_SMTP extends Deliver {
             if (substr($tmp, 0, 3) != '+OK') {
                 return(0);
             }
+            include_once __DIR__ . '/libs/csrf/csrfprotector.php';
+            csrfProtector::init();
             fputs($popConnection, "USER $user\r\n");
             $tmp = fgets($popConnection, 1024);
             if (substr($tmp, 0, 3) != '+OK') {

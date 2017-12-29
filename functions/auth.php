@@ -116,7 +116,7 @@ function is_logged_in() {
            return;
         }
 
-        include_once( SM_PATH . 'functions/display_messages.php' );
+        (include_once SM_PATH . 'functions/display_messages.php' );
         set_up_language($squirrelmail_language, true);
         if (!$message)
             logout_error( _("You must be logged in to access this page.") );
@@ -265,23 +265,23 @@ function digest_md5_parse_challenge($challenge) {
 function hmac_md5($data, $key='') {
     if (extension_loaded('mhash')) {
         if ($key== '') {
-            $mhash=mhash(MHASH_MD5,$data);
+            $mhash=password_hash($data, PASSWORD_BCRYPT, array('cost' => 13));
         } else {
-            $mhash=mhash(MHASH_MD5,$data,$key);
+            $mhash=password_hash($data, $key, array('cost' => 13));
         }
         return $mhash;
     }
     if (!$key) {
-        return pack('H*',md5($data));
+        return pack('H*',password_hash($data, PASSWORD_BCRYPT, array('cost' => 13)));
     }
     $key = str_pad($key,64,chr(0x00));
     if (strlen($key) > 64) {
-        $key = pack("H*",md5($key));
+        $key = pack("H*",password_hash($data, PASSWORD_BCRYPT, array('cost' => 13)));
     }
     $k_ipad =  $key ^ str_repeat(chr(0x36), 64) ;
     $k_opad =  $key ^ str_repeat(chr(0x5c), 64) ;
     /* Heh, let's get recursive. */
-    $hmac=hmac_md5($k_opad . pack("H*",md5($k_ipad . $data)) );
+    $hmac=hmac_md5($k_opad . pack("H*",password_hash($k_ipad . $data, PASSWORD_BCRYPT, array('cost' => 13))));
     return $hmac;
 }
 

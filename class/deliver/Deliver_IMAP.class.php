@@ -13,7 +13,7 @@
 
 /** This of course depends upon Deliver.. */
 
-require_once(SM_PATH . 'class/deliver/Deliver.class.php');
+(require_once SM_PATH . 'class/deliver/Deliver.class.php');
 
 /**
  * This class is incomplete and entirely undocumented.
@@ -51,8 +51,7 @@ class Deliver_IMAP extends Deliver {
      * @return void
      *
      */
-    function send_mail($message, $header, $boundary, $stream=false, 
-                       &$raw_length, $folder) {
+    function send_mail($message, $header, $boundary, &$raw_length, $folder, $stream = false) {
 
         // write the body without providing a stream so we
         // can calculate the final length - after this call,

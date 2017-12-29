@@ -139,7 +139,12 @@ class abook_ldap_server extends addressbook_backend {
                 $this->sname = $param['name'];
             }
 
-            $this->open(true);
+            $rst=$this->open(true);
+            if($rst==true){
+                return true;
+            }else{
+                return $rst;
+            }
         } else {
             $this->set_error('Invalid argument to constructor');
         }

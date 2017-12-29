@@ -110,8 +110,8 @@ if (isset($_SERVER['REQUEST_URI'])) {
  * config.php $version depends on strings.php.
  * strings.php sets $PHP_SELF.
  */
-require_once(SM_PATH . 'functions/strings.php');
-require_once(SM_PATH . 'config/config.php');
+(require_once SM_PATH . 'functions/strings.php');
+(require_once SM_PATH . 'config/config.php');
 
 /**
  * Allow disabling of all plugins or enabling just a select few
@@ -361,6 +361,7 @@ function sqgetGlobalVar($name, &$value, $search = SQ_INORDER) {
         } elseif ( $search == SQ_SESSION ) {
             break;
         }
+        break;
       case SQ_FORM:   // check post, get
       case SQ_POST:
         if( isset($_POST[$name]) ) {
@@ -369,6 +370,7 @@ function sqgetGlobalVar($name, &$value, $search = SQ_INORDER) {
         } elseif ( $search == SQ_POST ) {
           break;
         }
+        break;
       case SQ_GET:
         if ( isset($_GET[$name]) ) {
             $value = $_GET[$name];
@@ -438,6 +440,7 @@ function sqsession_destroy() {
     $sessid = session_id();
     if (!empty( $sessid )) {
         $_SESSION = array();
+        print_r($_SESSION);
         error_reporting(0);
         session_destroy();
     }

@@ -98,7 +98,8 @@ class Message {
     var $is_deleted = 0;
     /**
      * Message \flagged status
-     * @var boolean
+
+     *      * @var boolean
      */
     var $is_flagged = 0;
     /**
@@ -347,6 +348,7 @@ class Message {
         $arg_a  = array();
         if ($sub_msg) {
             $message = $sub_msg;
+            echo $message;
         } else {
             $message = new Message();
         }
@@ -394,6 +396,7 @@ class Message {
                                 ++$i;
                                 $arg_a[]= $msg->parseLanguage($read, $i);
                             }
+                            break;
                         case 7:
                             if (($arg_a[0] == 'message') && ($arg_a[1] == 'rfc822')) {
                                 $msg->header->type0 = $arg_a[0];
@@ -705,6 +708,7 @@ class Message {
                 $s = '';
                 $bEscaped = false;
                 $k = 0;
+                echo $k;
                  for ($j=$iPosStart,$iCnt=strlen($read);$j<$iCnt;++$j) {
                     $cChar = $read{$j};
                     switch ($cChar) {
@@ -836,9 +840,9 @@ class Message {
     function parseParenthesis($read, $i) {
         for ($i++; $read{$i} != ')'; ++$i) {
             switch ($read{$i}) {
-                case '"': $this->parseQuote($read, $i); break;
-                case '{': $this->parseLiteral($read, $i); break;
-                case '(': $composed = array($read,$i); $this->parseProperties($composed); break;
+                case '"': $s=$this->parseQuote($read, $i); echo $s; break;
+                case '{': $s=$this->parseLiteral($read, $i); echo $s; break;
+                case '(': $composed = array($read,$i); $s=$this->parseProperties($composed); echo $s; break;
                 default: break;
             }
         }
@@ -854,7 +858,8 @@ class Message {
      * @param string $type1 message part subtype
      * @return string (only when type0 is not message or multipart)
      */
-    function parseMessage($read, $type0, $type1) {
+    function parseMessage($read, $type0, $type1='') {
+        echo $type1;
         switch ($type0) {
             case 'message':
                 $rfc822_header = true;
@@ -908,6 +913,7 @@ class Message {
                         array_pop($boundaries);
                         $mime_header = true;
                         $bnd_end = true;
+                        echo bnd_end;
                     } else {
                         $mime_header = true;
                          $bnd_end = false;
