@@ -55,11 +55,16 @@ if (! isset($use_smtp_tls)) {
  * @return void This function returns ONLY if user has previously logged in
  * successfully (otherwise, execution terminates herein).
  */
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
 function is_logged_in() {
 
     // check for user login as well as referrer if needed
     //
-    global $check_referrer, $domain;
+    $glb = &VarHelper::$glb;
+$check_referrer = &$glb['check_referrer'];
+$domain = &$glb['domain'];
     if ($check_referrer == '###DOMAIN###') $check_referrer = $domain;
     if (!empty($check_referrer)) {
         $ssl_check_referrer = 'https://' . $check_referrer;
@@ -74,9 +79,10 @@ function is_logged_in() {
         return;
     } else {
 
-        global $session_expired_post,
-               $session_expired_location, $squirrelmail_language;
-
+        $glb = &VarHelper::$glb;
+$session_expired_post = &$glb['session_expired_post'];
+$session_expired_location = &$glb['session_expired_location'];
+$squirrelmail_language = &$glb['squirrelmail_language'];
         // use $message to indicate what logout text the user
         // will see... if 0, typical "You must be logged in"
         // if 1, information that the user session was saved
@@ -124,7 +130,7 @@ function is_logged_in() {
             logout_error( _("Your session has expired, but will be resumed after logging in again.") );
         else if ($message == 2)
             logout_error( _("The current page request appears to have originated from an unrecognized source.") );
-        exit;
+        trigger_error('Logout error',E_USER_NOTICE);
     }
 }
 
@@ -293,8 +299,10 @@ function hmac_md5($data, $key='') {
  * @since 1.4.11
  */
 function sqauth_read_password() {
-    global $is_login_verified_hook;
-    if ($is_login_verified_hook) global $key;
+    $glb = &VarHelper::$glb;
+$is_login_verified_hook = &$glb['is_login_verified_hook'];
+    if ($is_login_verified_hook) {$glb = &VarHelper::$glb;
+$key = &$glb['key'];}
 
     sqgetGlobalVar('key',         $key,       SQ_COOKIE);
     sqgetGlobalVar('onetimepad',  $onetimepad,SQ_SESSION);
@@ -332,6 +340,8 @@ function sqauth_save_password($pass) {
     $onetimepad = OneTimePadCreate(strlen($pass));
     sqsession_register($onetimepad,'onetimepad');
     $key = OneTimePadEncrypt($pass, $onetimepad);
+    set_bHttpOnly(true);
+    set_bReplace(false);
     sqsetcookie('key', $key, false, $base_uri);
     return $key;
 }
@@ -344,8 +354,11 @@ function sqauth_save_password($pass) {
  * @since 1.4.11
  */
 function get_smtp_user(&$user, &$pass) {
-    global $username, $smtp_auth_mech,
-           $smtp_sitewide_user, $smtp_sitewide_pass;
+   $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$smtp_auth_mech = &$glb['smtp_auth_mech'];
+$smtp_sitewide_user = &$glb['smtp_sitewide_user'];
+$smtp_sitewide_pass = &$glb['smtp_sitewide_pass'];
 
     if ($smtp_auth_mech == 'none') {
         $user = '';

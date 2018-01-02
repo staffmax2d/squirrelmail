@@ -190,6 +190,9 @@ function mail_fetch_login() {
                 if (substr($Line, 0, 1) == '+') {
                     fputs($imap_stream, $Message);
                     fputs($imap_stream, "\r\n");
+                    set_filter(false);
+                    set_outputstream(false); 
+                    set_no_return(false);
                     sqimap_read_data($imap_stream, "A3$i", false, $response, $message);
 
                     if ($mailfetch_lmos != 'on') {

@@ -139,7 +139,8 @@ for ($i = 0; $i < $numboxes; $i++) {
 
 /** Lets start removing the folders and messages **/
 if (($move_to_trash == true) && ($can_move_to_trash == true)) { /** if they wish to move messages to the trash **/
-    walkTreeInPostOrderCreatingFoldersUnderTrash(0, $imap_stream, $foldersTree, $mailbox);
+    global $uid_support;
+    walkTreeInPostOrderCreatingFoldersUnderTrash(0, $imap_stream, $foldersTree, $mailbox, $uid_support);
     walkTreeInPreOrderDeleteFolders(0, $imap_stream, $foldersTree);
 } else { /** if they do NOT wish to move messages to the trash (or cannot)**/
     walkTreeInPreOrderDeleteFolders(0, $imap_stream, $foldersTree);

@@ -170,7 +170,8 @@ class Rfc822Header {
     function stripComments($value) {
         $result = '';
         $cnt = strlen($value);
-        for ($i = 0; $i < $cnt; ++$i) {
+        $i = 0;
+        while ( $i < $cnt ) {
             switch ($value{$i}) {
                 case '"':
                     $result .= '"';
@@ -205,6 +206,7 @@ class Rfc822Header {
                     $result .= $value{$i};
                     break;
             }
+            ++$i;
         }
         return $result;
     }
@@ -255,74 +257,8 @@ class Rfc822Header {
                 $value = $this->stripComments($value);
                 $this->message_id = $value;
                 break;
-            case 'references':
-                $value = $this->stripComments($value);
-                $this->references = $value;
-                break;
-            case 'x-confirm-reading-to':
-            case 'return-receipt-to':
-            case 'disposition-notification-to':
-                $value = $this->stripComments($value);
-                $this->dnt = $this->parseAddress($value);
-                break;
-            case 'mime-version':
-                $value = $this->stripComments($value);
-                $value = str_replace(' ', '', $value);
-                $this->mime = ($value == '1.0' ? true : $this->mime);
-                break;
-            case 'content-type':
-                $value = $this->stripComments($value);
-                $this->parseContentType($value);
-                break;
-            case 'content-disposition':
-                $value = $this->stripComments($value);
-                $this->parseDisposition($value);
-                break;
-            case 'user-agent':
-            case 'x-mailer':
-                $this->xmailer = $value;
-                break;
-            case 'x-priority':
-            case 'importance':
-            case 'priority':
-                $this->priority = $this->parsePriority($value);
-                break;
-            case 'list-post':
-                $value = $this->stripComments($value);
-                $this->mlist('post', $value);
-                break;
-            case 'list-reply':
-                $value = $this->stripComments($value);
-                $this->mlist('reply', $value);
-                break;
-            case 'list-subscribe':
-                $value = $this->stripComments($value);
-                $this->mlist('subscribe', $value);
-                break;
-            case 'list-unsubscribe':
-                $value = $this->stripComments($value);
-                $this->mlist('unsubscribe', $value);
-                break;
-            case 'list-archive':
-                $value = $this->stripComments($value);
-                $this->mlist('archive', $value);
-                break;
-            case 'list-owner':
-                $value = $this->stripComments($value);
-                $this->mlist('owner', $value);
-                break;
-            case 'list-help':
-                $value = $this->stripComments($value);
-                $this->mlist('help', $value);
-                break;
-            case 'list-id':
-                $value = $this->stripComments($value);
-                $this->mlist('id', $value);
-                break;
-            case 'x-spam-status':
-                $this->x_spam_status = $this->parseSpamStatus($value);
-                break;
             default:
+                selezione2($field);
                 break;
         }
     }
@@ -382,59 +318,7 @@ class Rfc822Header {
                 if ($sToken) $aTokens[] = $sToken;
                 break;
             case '(':
-                array_pop($aTokens); //remove inserted space
-                $iEnd = strpos($address,')',$i);
-                if (!$iEnd) {
-                    $sToken = substr($address,$i);
-                    $i = $iCnt;
-                } else {
-                    $iDepth = 1;
-                    $iComment = $i;
-                    while (($iDepth > 0) && (++$iComment < $iCnt)) {
-                        $cCharComment = $address{$iComment};
-                        switch($cCharComment) {
-                            case '\\':
-                                ++$iComment;
-                                break;
-                            case '(':
-                                ++$iDepth;
-                                break;
-                            case ')':
-                                --$iDepth;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    if ($iDepth == 0) {
-                        $sToken = substr($address,$i,$iComment - $i +1);
-                        $i = $iComment;
-                    } else {
-                        $sToken = substr($address,$i,$iEnd - $i + 1);
-                        $i = $iEnd;
-                    }
-                }
-                // check the next token in case comments appear in the middle of email addresses
-                $prevToken = end($aTokens);
-                if (!in_array($prevToken,$aSpecials,true)) {
-                    if ($i+1<strlen($address) && !in_array($address{$i+1},$aSpecials,true)) {
-                        $iEnd = strpos($address,' ',$i+1);
-                        if ($iEnd) {
-                            $sNextToken = trim(substr($address,$i+1,$iEnd - $i -1));
-                            $i = $iEnd-1;
-                        } else {
-                            $sNextToken = trim(substr($address,$i+1));
-                            $i = $iCnt;
-                        }
-                        // remove the token
-                        array_pop($aTokens);
-                        // create token and add it again
-                        $sNewToken = $prevToken . $sNextToken;
-                        if($sNewToken) $aTokens[] = $sNewToken;
-                    }
-                }
-                $sToken = str_replace($aReplace, $aSpecials,$sToken);
-                if ($sToken) $aTokens[] = $sToken;
+                funzioneCaseParentesi();
                 break;
             case ',':
             case ':':
@@ -1006,3 +890,140 @@ class Rfc822Header {
     }
 }
 
+function funzioneCaseParentesi(){
+                array_pop($aTokens); //remove inserted space
+                $iEnd = strpos($address,')',$i);
+                if (!$iEnd) {
+                    $sToken = substr($address,$i);
+                    $i = $iCnt;
+                } else {
+                    $iDepth = 1;
+                    $iComment = $i;
+                    while (($iDepth > 0) && (++$iComment < $iCnt)) {
+                        $cCharComment = $address{$iComment};
+                        switch($cCharComment) {
+                            case '\\':
+                                ++$iComment;
+                                break;
+                            case '(':
+                                ++$iDepth;
+                                break;
+                            case ')':
+                                --$iDepth;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if ($iDepth == 0) {
+                        $sToken = substr($address,$i,$iComment - $i +1);
+                        $i = $iComment;
+                    } else {
+                        $sToken = substr($address,$i,$iEnd - $i + 1);
+                        $i = $iEnd;
+                    }
+                }
+                // check the next token in case comments appear in the middle of email addresses
+                $prevToken = end($aTokens);
+                if (!in_array($prevToken,$aSpecials,true)) {
+                    if ($i+1<strlen($address) && !in_array($address{$i+1},$aSpecials,true)) {
+                        $iEnd = strpos($address,' ',$i+1);
+                        if ($iEnd) {
+                            $sNextToken = trim(substr($address,$i+1,$iEnd - $i -1));
+                            $i = $iEnd-1;
+                        } else {
+                            $sNextToken = trim(substr($address,$i+1));
+                            $i = $iCnt;
+                        }
+                        // remove the token
+                        array_pop($aTokens);
+                        // create token and add it again
+                        $sNewToken = $prevToken . $sNextToken;
+                        if($sNewToken) $aTokens[] = $sNewToken;
+                    }
+                }
+                $sToken = str_replace($aReplace, $aSpecials,$sToken);
+                if ($sToken) $aTokens[] = $sToken;
+}
+
+function selezione2($m){
+    switch ($m) {
+            case 'references':
+                $value = $this->stripComments($value);
+                $this->references = $value;
+                break;
+            case 'x-confirm-reading-to':
+            case 'return-receipt-to':
+            case 'disposition-notification-to':
+                $value = $this->stripComments($value);
+                $this->dnt = $this->parseAddress($value);
+                break;
+            case 'mime-version':
+                $value = $this->stripComments($value);
+                $value = str_replace(' ', '', $value);
+                $this->mime = ($value == '1.0' ? true : $this->mime);
+                break;
+            case 'content-type':
+                $value = $this->stripComments($value);
+                $this->parseContentType($value);
+                break;
+            case 'content-disposition':
+                $value = $this->stripComments($value);
+                $this->parseDisposition($value);
+                break;
+            case 'user-agent':
+            case 'x-mailer':
+                $this->xmailer = $value;
+                break;
+            case 'x-priority':
+            case 'importance':
+            case 'priority':
+                $this->priority = $this->parsePriority($value);
+                break;
+            default:
+                selezione3($m);
+                break;
+    }
+}
+
+function selezione3($n){
+    switch ($n) {
+            case 'list-post':
+                $value = $this->stripComments($value);
+                $this->mlist('post', $value);
+                break;
+            case 'list-reply':
+                $value = $this->stripComments($value);
+                $this->mlist('reply', $value);
+                break;
+            case 'list-subscribe':
+                $value = $this->stripComments($value);
+                $this->mlist('subscribe', $value);
+                break;
+            case 'list-unsubscribe':
+                $value = $this->stripComments($value);
+                $this->mlist('unsubscribe', $value);
+                break;
+            case 'list-archive':
+                $value = $this->stripComments($value);
+                $this->mlist('archive', $value);
+                break;
+            case 'list-owner':
+                $value = $this->stripComments($value);
+                $this->mlist('owner', $value);
+                break;
+            case 'list-help':
+                $value = $this->stripComments($value);
+                $this->mlist('help', $value);
+                break;
+            case 'list-id':
+                $value = $this->stripComments($value);
+                $this->mlist('id', $value);
+                break;
+            case 'x-spam-status':
+                $this->x_spam_status = $this->parseSpamStatus($value);
+                break;
+            default:
+                break;
+    }
+}

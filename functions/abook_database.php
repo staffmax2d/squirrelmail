@@ -20,7 +20,7 @@ if (!(include_once 'DB.php')) {
                         '<tt>DB.php</tt>') . "<br />\n";
     $error .= _("Please contact your system administrator and report this error.");
     error_box($error, $color);
-    exit;
+    trigger_error($error,E_USER_ERROR);
 }
 
 /**

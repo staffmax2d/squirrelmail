@@ -25,6 +25,9 @@
  * @param string tzc the timezone correction
  * @return int the corrected timestamp
  */
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
 function getGMTSeconds($stamp, $tzc) {
     /* date couldn't be parsed */
     if ($stamp == -1) {
@@ -58,25 +61,8 @@ function getGMTSeconds($stamp, $tzc) {
         case 'GMT':
             $tzc = '+0000';
             break;
-        case 'BST':
-        case 'MET':
-        case 'CET':
-            $tzc = '+0100';
-            break;
-        case 'EET':
-        case 'IST':
-        case 'MET DST':
-        case 'METDST':
-	case 'CEST':
-	case 'MEST':
-            $tzc = '+0200';
-            break;
-        case 'HKT':
-            $tzc = '+0800';
-            break;
-        case 'JST':
-        case 'KST':
-            $tzc = '+0900';
+        default:
+            $tzc=selezione4($tzc);
             break;
     }
     $neg = false;
@@ -308,7 +294,9 @@ function date_intl( $date_format, $stamp ) {
  */
 function getLongDateString( $stamp, $fallback = '' ) {
 
-    global $hour_format;
+    
+$glb = &VarHelper::$glb;
+$hour_format = &$glb['hour_format'];
 
     if ($stamp == -1) {
         return $fallback;
@@ -336,7 +324,10 @@ function getLongDateString( $stamp, $fallback = '' ) {
  */
 function getDateString( $stamp ) {
 
-    global $invert_time, $hour_format, $show_full_date;
+    $glb = &VarHelper::$glb;
+$invert_time = &$glb['invert_time'];
+$hour_format = &$glb['hour_format'];
+$show_full_date = &$glb['show_full_date'];
 
     if ( $stamp == -1 ) {
        return '';
@@ -462,3 +453,29 @@ function getTimeStamp($dateParts) {
       return ($mtime);
    }
 */
+
+function selezione4($o){
+    switch ($o) {
+        case 'BST':
+        case 'MET':
+        case 'CET':
+            $tzc = '+0100';
+            break;
+        case 'EET':
+        case 'IST':
+        case 'MET DST':
+        case 'METDST':
+	case 'CEST':
+	case 'MEST':
+            $tzc = '+0200';
+            break;
+        case 'HKT':
+            $tzc = '+0800';
+            break;
+        case 'JST':
+        default:
+            $tzc = '+0900';
+            break;
+    }
+    return $tzc;
+} 

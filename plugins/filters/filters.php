@@ -405,6 +405,9 @@ function spam_filters($imap_stream) {
 
     $search_array = array();
     if ($filters_spam_scan == 'new') {
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $read = sqimap_run_command($imap_stream, 'SEARCH UNSEEN', true, $response, $message, $uid_support);
         if (isset($read[0])) {
             for ($i = 0, $iCnt = count($read); $i < $iCnt; ++$i) {

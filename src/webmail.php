@@ -63,6 +63,8 @@ do_hook('webmail_top');
  */
 $my_language = getPref($data_dir, $username, 'language');
 if ($my_language != $squirrelmail_language) {
+    $bHttpOnly = get_bHttpOnly();
+    $bReplace = get_bReplace();
     sqsetcookie('squirrelmail_language', $my_language, time()+2592000, $base_uri);
 }
 

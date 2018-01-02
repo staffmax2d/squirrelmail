@@ -19,6 +19,9 @@ function get_caps($imap_stream) {
     $sid = sqimap_session_id();
     $query = "$sid CAPABILITY\r\n";
     fputs ($imap_stream, $query);
+    set_filter(false);
+    set_outputstream(false);
+    set_no_return(false);
     $responses = sqimap_read_data_list($imap_stream, $sid, true, $responses, $message);
     return $responses;
 }
@@ -32,6 +35,9 @@ function imap_test($imap_stream, $string) {
     $query = "$sid ".trim($string)."\r\n";
     print "<tr><td>".htmlspecialchars($query)."</td></tr>";
     fputs ($imap_stream, $query);
+    set_filter(false);
+    set_outputstream(false);
+    set_no_return(false);
     $response = sqimap_read_data_list($imap_stream, $sid, false, $responses, $message);
     array_push($response, $message);
     return $response;

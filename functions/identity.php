@@ -24,9 +24,16 @@ if (!defined('SM_PATH')) {
 * Array is keyed: full_name, reply_to, email_address, index, signature
 * @return array full_name,reply_to,email_address,index,signature
 */
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
 function get_identities() {
 
-    global $username, $data_dir, $domain;
+    $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$data_dir = &$glb['data_dir'];
+$domain = &$glb['domain'];
 
     $em = getPref($data_dir,$username,'email_address');
     if ( ! $em ) {
@@ -66,7 +73,10 @@ function get_identities() {
  */
 function save_identities($identities) {
 
-    global $username, $data_dir, $domain;
+    $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$data_dir = &$glb['data_dir'];
+$domain = &$glb['domain'];
 
     if (empty($identities) || !is_array($identities)) {
         return;

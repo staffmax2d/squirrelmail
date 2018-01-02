@@ -59,6 +59,8 @@ if (!sqgetGlobalVar('mailtodata', $mailtodata)) {
 
 set_up_language($squirrelmail_language, true);
 /* Refresh the language cookie. */
+ $bHttpOnly = get_bHttpOnly();
+ $bReplace = get_bReplace();
 sqsetcookie('squirrelmail_language', $squirrelmail_language, time()+2592000, $base_uri);
 
 if (!isset($login_username)) {
@@ -87,6 +89,8 @@ if (!sqsession_is_registered('user_is_logged_in')) {
 
         // re-send session cookie so we get the right parameters on it
         // (such as HTTPOnly, if necessary - PHP doesn't do this itself
+         $bHttpOnly = get_bHttpOnly();
+         $bReplace = get_bReplace();
         sqsetcookie(session_name(),session_id(),false,$base_uri);
     }
 
@@ -113,6 +117,8 @@ if (!sqsession_is_registered('user_is_logged_in')) {
 
     $username = $login_username;
     sqsession_register ($username, 'username');
+     $bHttpOnly = get_bHttpOnly();
+    $bReplace = get_bReplace();
     sqsetcookie('key', $key, 0, $base_uri);
 
     $is_login_verified_hook = TRUE;

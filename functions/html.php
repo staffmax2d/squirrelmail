@@ -24,13 +24,23 @@
  * @param string $xtra Extra options
  * @return string HTML ready for output
  */
+
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
+
+
 function html_tag( $tag,                // Tag to output
                        $val = '',           // Value between tags
                        $align = '',         // Alignment
                        $bgcolor = '',       // Back color
                        $xtra = '' ) {       // Extra options
+    
+    $glb = &VarHelper::$glb;
 
-        GLOBAL $languages, $squirrelmail_language;
+       $languages = &$glb['languages']; 
+$squirrelmail_language = &$glb['squirrelmail_language']; 
 
         $align = strtolower( $align );
         $bgc = '';

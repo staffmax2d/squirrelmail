@@ -18,6 +18,11 @@
  * Deliver messages using SMTP
  * @package squirrelmail
  */
+
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+        
 class Deliver_SMTP extends Deliver {
 
     function preWriteToStream(&$s) {
@@ -26,10 +31,23 @@ class Deliver_SMTP extends Deliver {
             $s = str_replace("\n.","\n..",$s);
         }
     }
-
-    function initStream($message, $domain, $length=0, $host='', $port='', $user='', $pass='', $authpop=false, $pop_host='') {
+    
+    public $pass ='';
+    public $authpop=false;
+    public $pop_host='';
+    
+    
+    
+    function initStream($message, $domain, $length=0, $host='', $port='', $user='') {
+        $pass = $this->pass;
+        $authpop= $this->authpop;
+        $pop_host = $this->pop_host;
         echo $length;
-        global $use_smtp_tls, $smtp_auth_mech;
+        
+        $glb = &VarHelper::$glb;
+        $use_smtp_tls = &$glb['use_smtp_tls'];
+        $smtp_auth_mech = &$glb['smtp_auth_mech'];
+    
 
         if ($authpop) {
             $a=$this->authPop($user, $pass, $pop_host, '');
@@ -315,25 +333,7 @@ class Deliver_SMTP extends Deliver {
             break;
         case '504': $message = _("Command parameter not implemented");
             break;
-        case '530': $message = _("Authentication required");
-            break;
-        case '534': $message = _("Authentication mechanism is too weak");
-            break;
-        case '535': $message = _("Authentication failed");
-            break;
-        case '538': $message = _("Encryption required for requested authentication mechanism");
-            break;
-        case '550': $message = _("Requested action not taken: mailbox unavailable");
-            break;
-        case '551': $message = _("User not local; please try forwarding");
-            break;
-        case '552': $message = _("Requested mail action aborted: exceeding storage allocation");
-            break;
-        case '553': $message = _("Requested action not taken: mailbox name not allowed");
-            break;
-        case '554': $message = _("Transaction failed");
-            break;
-        default:    $message = _("Unknown response");
+        default:    $message=selezione1($err_num);
             break;
         }
 
@@ -377,3 +377,28 @@ class Deliver_SMTP extends Deliver {
     }
 }
 
+function selezione1($k){
+    switch ($k){
+        case '530': $message = _("Authentication required");
+            break;
+        case '534': $message = _("Authentication mechanism is too weak");
+            break;
+        case '535': $message = _("Authentication failed");
+            break;
+        case '538': $message = _("Encryption required for requested authentication mechanism");
+            break;
+        case '550': $message = _("Requested action not taken: mailbox unavailable");
+            break;
+        case '551': $message = _("User not local; please try forwarding");
+            break;
+        case '552': $message = _("Requested mail action aborted: exceeding storage allocation");
+            break;
+        case '553': $message = _("Requested action not taken: mailbox name not allowed");
+            break;
+        case '554': $message = _("Transaction failed");
+            break;
+        default:    $message = _("Unknown response");
+            break;
+    }
+    return $message;
+}    

@@ -20,13 +20,56 @@
 (require_once SM_PATH . 'functions/mailbox_display.php');
 (require_once SM_PATH . 'functions/mime.php');
 
-function sqimap_search($imapConnection, $search_where, $search_what, $mailbox, $color='', $search_all='', $count_all='', $search_position = '') {
+
+$count_all='';
+$search_position = '';
+
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
+function set_count_all($value){
+    
+$glb = &VarHelper::$glb;
+$count_all = &$glb['count_all'];
+    $count_all=$value;
+}
+
+function get_count_all(){
+    
+$glb = &VarHelper::$glb;
+$count_all = &$glb['count_all'];
+    return $count_all;
+}
+
+function set_search_position($value){
+    $glb = &VarHelper::$glb;
+$search_position = &$glb['search_position'];
+    $search_position=$value;
+}
+
+function get_search_position(){
+    $glb = &VarHelper::$glb;
+$search_position = &$glb['search_position'];
+    return $search_position;
+}
+
+function sqimap_search($imapConnection, $search_where, $search_what, $mailbox, $color='', $search_all='') {
+    $search_position = get_search_position();
+    $count_all = get_count_all();
+    
     echo $color;
     echo $search_all;
     echo $count_all;
-    global $message_highlight_list, $squirrelmail_language, $languages,
-           $index_order, $pos, $allow_charset_search, $uid_support,
-	   $imap_server_type;
+    $glb = &VarHelper::$glb;
+$message_highlight_list = &$glb['message_highlight_list'];
+$squirrelmail_language = &$glb['squirrelmail_language'];
+$languages = &$glb['languages'];
+$index_order = &$glb['index_order'];
+$pos = &$glb['pos'];
+$allow_charset_search = &$glb['allow_charset_search'];
+$uid_support = &$glb['uid_support'];
+$imap_server_type = &$glb['imap_server_type'];
 
     $pos = $search_position;
 
@@ -66,6 +109,9 @@ function sqimap_search($imapConnection, $search_where, $search_what, $mailbox, $
     }
 
     /* read data back from IMAP */
+    set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $readin = sqimap_run_command($imapConnection, $ss, false, $result, $message, $uid_support);
 
     /* try US-ASCII charset if search fails */
@@ -73,6 +119,9 @@ function sqimap_search($imapConnection, $search_where, $search_what, $mailbox, $
         && strtolower($result) == 'no') {
         $ss = "SEARCH CHARSET \"US-ASCII\" ALL $search_string";
         if (empty($search_lit)) {
+         set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
             $readin = sqimap_run_command($imapConnection, $ss, false, $result, $message, $uid_support);
         } else {
             $search_lit['command'] = $ss;
@@ -103,7 +152,8 @@ function sqimap_search($imapConnection, $search_where, $search_what, $mailbox, $
     }
 
 
-    global $sent_folder;
+    $glb = &VarHelper::$glb;
+$sent_folder = &$glb['sent_folder'];
 
     $cnt = count($messagelist);
     for ($q = 0; $q < $cnt; $q++) {

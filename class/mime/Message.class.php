@@ -24,6 +24,11 @@
  * @subpackage mime
  * @since 1.3.0
  */
+
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
 class Message {
     /**
      * rfc822header object
@@ -213,8 +218,10 @@ class Message {
             $cur_ent_a = explode('.', $this->entity_id);
         }
         $ent_a = explode('.', $ent);
-
-        for ($i = 0,$entCount = count($ent_a) - 1; $i < $entCount; ++$i) {
+        $i = 0;
+        $entCount = count($ent_a) - 1;
+        while ($i < $entCount ) {
+            
             if (isset($cur_ent_a[$i]) && ($cur_ent_a[$i] != $ent_a[$i])) {
                 $msg = $msg->parent;
                 $cur_ent_a = explode('.', $msg->entity_id);
@@ -230,6 +237,7 @@ class Message {
                 /*this is a header for a message/rfc822 entity */
                 $msg = $msg->entities[0];
             }
+            ++$i;
         }
 
         if (($msg->type0 == 'message') && ($msg->type1 == 'rfc822')) {
@@ -352,8 +360,8 @@ class Message {
         } else {
             $message = new Message();
         }
-
-        for ($cnt = strlen($read); $i < $cnt; ++$i) {
+        $cnt = strlen($read);
+        while ( $i < $cnt ) {
             $char = strtoupper($read{$i});
             switch ($char) {
                 case '(':
@@ -522,7 +530,9 @@ class Message {
                     return $msg;
                 default: break;
             } /* switch */
-        } /* for */
+        
+            ++$i;
+        } /* while */
     } /* parsestructure */
 
     /**
@@ -567,7 +577,8 @@ class Message {
         $arg_no = 0;
         $arg_a = array();
         ++$i;
-        for ($cnt = strlen($read); ($i < $cnt) && ($read{$i} != ')'); ++$i) {
+        $cnt = strlen($read);
+        while ( ($i < $cnt) && ($read{$i} != ')') ) {
             $char = strtoupper($read{$i});
             switch ($char) {
                 case '"':
@@ -625,6 +636,7 @@ class Message {
                     break;
                 default: break;
             }
+            ++$i;
         }
 
         if (count($arg_a) > 9) {
@@ -695,11 +707,11 @@ class Message {
         $iPosStart = $iPos;
         while (true) {
             $iPos = strpos($read,'"',$iPos);
-            if (!$iPos) break;
-            if ($iPos && $read{$iPos -1} != '\\') {
+            
+            if (!$iPos||($iPos && $read{$iPos -1}) != '\\') {
                 $s = substr($read,$i,($iPos-$i));
                 $i = $iPos;
-                break;
+                goto f;
             } else if ($iPos > 1 && $read{$iPos -1} == '\\' && $read{$iPos-2} == '\\') {
                 // This is an unique situation where the fast detection of the string
                 // fails. If the quote string ends with \\ then we need to iterate
@@ -722,7 +734,7 @@ class Message {
                                 $bEscaped = false;
                             } else {
                                 $i = $j;
-                                break 3;
+                                goto f;
                             }
                             break;
                          default:
@@ -736,10 +748,10 @@ class Message {
             }
             ++$iPos;
             if ($iPos > strlen($read)) {
-                break;
+                goto f;
             }
         }
-        return $s;
+        f:return $s;
     }
 
     /**
@@ -749,7 +761,7 @@ class Message {
      */
     function parseAddress($read, &$i) {
         $arg_a = array();
-        for (; $read{$i} != ')'; ++$i) {
+        while ( $read{$i} != ')' ) {
             $char = strtoupper($read{$i});
             switch ($char) {
                 case '"': $arg_a[] = $this->parseQuote($read, $i); break;
@@ -763,6 +775,7 @@ class Message {
                     break;
                 default: break;
             }
+            ++$i;
         }
 
         if (count($arg_a) == 4) {
@@ -1127,7 +1140,9 @@ class Message {
      */
     function purgeAttachments() {
         if ($this->att_local_name) {
-            global $username, $attachment_dir;
+            $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$attachment_dir = &$glb['attachment_dir'];
             $hashed_attachment_dir = getHashedDir($username, $attachment_dir);
             if ( file_exists($hashed_attachment_dir . '/' . $this->att_local_name) ) {
                 unlink($hashed_attachment_dir . '/' . $this->att_local_name);

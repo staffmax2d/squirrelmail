@@ -1002,11 +1002,17 @@ function getMessage_RFC822_Attachment($message, $composeMessage, $passed_id,
     global $attachment_dir, $username, $data_dir, $uid_support;
     $hashed_attachment_dir = getHashedDir($username, $attachment_dir);
     if (!$passed_ent_id) {
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $body_a = sqimap_run_command($imapConnection,
                 'FETCH '.$passed_id.' RFC822',
                 TRUE, $response, $readmessage,
                 $uid_support);
     } else {
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $body_a = sqimap_run_command($imapConnection,
                 'FETCH '.$passed_id.' BODY['.$passed_ent_id.']',
                 TRUE, $response, $readmessage, $uid_support);
@@ -1654,9 +1660,12 @@ function deliverMessage(&$composeMessage, $draft=false) {
             $pop_before_smtp_host = $smtpServerAddress;
         
         get_smtp_user($user, $pass);
-
+        
+        $deliver->pass=$pass;
+        $deliver->authpop=$authPop;
+        $deliver->pop_host=$pop_before_smtp_host;
         $stream = $deliver->initStream($composeMessage,$domain,0,
-                $smtpServerAddress, $smtpPort, $user, $pass, $authPop, $pop_before_smtp_host);
+                $smtpServerAddress, $smtpPort, $user);
     } elseif (!$draft) {
         require_once(SM_PATH . 'class/deliver/Deliver_SendMail.class.php');
         global $sendmail_path, $sendmail_args;

@@ -326,9 +326,13 @@ function SendMDN ( $mailbox, $passed_id, $sender, $message, $imapConnection) {
             $pop_before_smtp_host = $smtpServerAddress;
 
         get_smtp_user($user, $pass);
+        
+        $deliver->pass=$pass;
+        $deliver->authpop=$authPop;
+        $deliver->pop_host=$pop_before_smtp_host;
 
         $stream = $deliver->initStream($composeMessage,$domain,0,
-                $smtpServerAddress, $smtpPort, $user, $pass, $authPop, $pop_before_smtp_host);
+                $smtpServerAddress, $smtpPort, $user);
     }
     $success = false;
     if ($stream) {
@@ -379,6 +383,9 @@ function SendMDN ( $mailbox, $passed_id, $sender, $message, $imapConnection) {
 function ToggleMDNflag ($set ,$imapConnection, $mailbox, $passed_id, $uid_support) {
     $sg   =  $set?'+':'-';
     $cmd  = 'STORE ' . $passed_id . ' ' . $sg . 'FLAGS ($MDNSent)';
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $read = sqimap_run_command ($imapConnection, $cmd, true, $response,
                                 $readmessage, $uid_support);
 }
@@ -801,6 +808,9 @@ if (isset($passed_ent_id) && $passed_ent_id) {
     if ($message->type0 != 'message'  && $message->type1 != 'rfc822') {
         $message = $message->parent;
     }
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $read = sqimap_run_command ($imapConnection, "FETCH $passed_id BODY[$passed_ent_id.HEADER]", true, $response, $msg, $uid_support);
     $rfc822_header = new Rfc822Header();
     $rfc822_header->parseHeader($read);

@@ -27,9 +27,16 @@
  * @return bool Returns true on successful copy, false on failure
  *
  */
-function sqimap_msgs_list_copy($imap_stream, $id, $mailbox) {
-    global $uid_support;
+
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
+function sqimap_msgs_list_copy($imap_stream, $id, $mailbox, $uid_support) {
     $msgs_id = sqimap_message_list_squisher($id);
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $read = sqimap_run_command ($imap_stream, "COPY $msgs_id \"$mailbox\"", true, $response, $message, $uid_support);
     echo $read;
     
@@ -72,17 +79,31 @@ function sqimap_msgs_list_move($imap_stream, $id, $mailbox, $handle_errors = '')
  * @param mixed  $id          A string or array of messages to delete
  *
  */
+
+
+
+
+
 function sqimap_msgs_list_delete($imap_stream, $mailbox, $id) {
-    global $move_to_trash, $trash_folder, $uid_support;
+    $glb = &VarHelper::$glb;
+    $move_to_trash = &$glb['move_to_trash'];
+    $trash_folder = &$glb['trash_folder'];
+    $uid_support = &$glb['uid_support'];
     $msgs_id = sqimap_message_list_squisher($id);
     if (($move_to_trash == true) && (sqimap_mailbox_exists($imap_stream, $trash_folder) && ($mailbox != $trash_folder))) {
         /**
          * turn off internal error handling (third argument = false) and
          * ignore copy to trash errors (allows to delete messages when overquota)
          */
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $read = sqimap_run_command ($imap_stream, "COPY $msgs_id \"$trash_folder\"", false, $response, $message, $uid_support);
         echo $read;
     }
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $read = sqimap_run_command ($imap_stream, "STORE $msgs_id +FLAGS (\\Deleted)", true, $response, $message, $uid_support);
 }
 
@@ -120,7 +141,8 @@ function sqimap_message_list_squisher($messages_array) {
  * Returns the references header lines
  */
 function get_reference_header($imap_stream, $message) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
     $responses = array ();
     $results = array();
     echo $results;
@@ -137,11 +159,25 @@ function get_reference_header($imap_stream, $message) {
 /**
  * Get sort order from server and return it as the $id array for mailbox_display
  */
+
+
+
+
+
+
+
+
+
 function sqimap_get_sort_order($imap_stream, $sort, $mbxresponse) {
-    global  $default_charset, $thread_sort_messages,
-            $internal_date_sort, $server_sort_array,
-            $sent_folder, $mailbox, $uid_support,
-            $imap_server_type;
+    $glb = &VarHelper::$glb;
+    $default_charset = &$glb['default_charset'];
+    
+    $internal_date_sort = &$glb['internal_date_sort'];
+    $server_sort_array = &$glb['server_sort_array'];
+    $sent_folder = &$glb['sent_folder'];
+    $mailbox = &$glb['mailbox'];
+    $uid_support = &$glb['uid_support'];
+    $imap_server_type = &$glb['imap_server_type'];
 
     if (sqsession_is_registered('server_sort_array')) {
         sqsession_unregister('server_sort_array');
@@ -237,7 +273,8 @@ function sqimap_get_sort_order($imap_stream, $sort, $mbxresponse) {
  * @return array    $php_sort_array
  */
 function sqimap_get_php_sort_order($imap_stream, $mbxresponse) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
 
     if (sqsession_is_registered('php_sort_array')) {
         sqsession_unregister('php_sort_array');
@@ -252,6 +289,9 @@ function sqimap_get_php_sort_order($imap_stream, $mbxresponse) {
             $uidnext = '*';
         }
         $query = "SEARCH UID 1:$uidnext";
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $uids = sqimap_run_command ($imap_stream, $query, true, $response, $message, true);
         if (isset($uids[0])) {
             $php_sort_array = array();
@@ -282,9 +322,11 @@ function sqimap_get_php_sort_order($imap_stream, $mbxresponse) {
  * @param  resource $imap_stream
  * @return array message ID to indent level mappings
  */
+
 function get_parent_level($imap_stream='') {
     echo $imap_stream;
-    global $thread_new;
+    $glb = &VarHelper::$glb;
+    $thread_new = &$glb['thread_new'];
     $parent = "";
     $child = "";
     $cutoff = 0;
@@ -385,8 +427,15 @@ function get_parent_level($imap_stream='') {
  * Returns an array with each element as a string representing one
  * message-thread as returned by the IMAP server.
  */
+
+
 function get_thread_sort($imap_stream) {
-    global $thread_new, $sort_by_ref, $default_charset, $server_sort_array, $uid_support;
+    $glb = &VarHelper::$glb;
+    $thread_new = &$glb['thread_new'];
+    $sort_by_ref = &$glb['sort_by_ref'];
+    $default_charset = &$glb['default_charset'];
+    $server_sort_array = &$glb['server_sort_array'];
+    $uid_support = &$glb['uid_support'];
     if (sqsession_is_registered('thread_new')) {
         sqsession_unregister('thread_new');
     }
@@ -400,7 +449,9 @@ function get_thread_sort($imap_stream) {
         $sort_type = 'ORDEREDSUBJECT';
     }
     $query = "THREAD $sort_type ".strtoupper($default_charset)." ALL";
-
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $thread_test = sqimap_run_command ($imap_stream, $query, true, $response, $message, $uid_support);
     if (isset($thread_test[0])) {
         for ($i=0,$iCnt=count($thread_test);$i<$iCnt;++$i) {
@@ -479,17 +530,17 @@ function parseString($read,&$i) {
         $iPos = ++$i;
         while (true) {
             $iPos = strpos($read,'"',$iPos);
-            if (!$iPos) break;
-            if ($iPos && $read{$iPos -1} != '\\') {
+            
+            if (!$iPos||($iPos && $read{$iPos -1}) != '\\') {
                 $s = substr($read,$i,($iPos-$i));
                 $i = $iPos;
-                break;
+                goto i;
             }
             $iPos++;
             if ($iPos > strlen($read)) {
-                break;
+                goto i;
             }
-        }
+        }i:
     } else if ($char == '{') {
         $lit_cnt = '';
         ++$i;
@@ -623,75 +674,14 @@ function parseFetch(&$aResponse, $aMessageList = array()) {
                 break;
             case 'BODY.PEEK[HEADER.FIELDS':
             case 'BODY[HEADER.FIELDS':
-                $i = strpos($read,'{',$i); // header is always returned as literal because it contain \n characters
-                $header = parseString($read,$i);
-                if ($header === false) break 2;
-                /* First we replace all \r\n by \n, and unfold the header */
-                $hdr = trim(str_replace(array("\r\n", "\n\t", "\n "),array("\n", ' ', ' '), $header));
-                /* Now we can make a new header array with
-                   each element representing a headerline  */
-                $aHdr = explode("\n" , $hdr);
-                $aReceived = array();
-                print_r($aReceived);
-                foreach ($aHdr as $line) {
-                    $pos = strpos($line, ':');
-                    if ($pos > 0) {
-                        $field = strtolower(substr($line, 0, $pos));
-                        if (!strstr($field,' ')) { /* valid field */
-                            $value = trim(substr($line, $pos+1));
-                            switch($field) {
-                                case 'date':
-                                    $aMsg['date'] = trim(str_replace('  ', ' ', $value));
-                                    break;
-                                case 'x-priority': $aMsg['x-priority'] = ($value) ? (int) $value{0} : 3; break;
-                                case 'priority':
-                                case 'importance':
-                                    // duplicate code with Rfc822Header.cls:parsePriority()
-                                    if (!isset($aMsg['x-priority'])) {
-                                        $aPrio = preg_split('/\s/',trim($value));
-                                        $sPrio = strtolower(array_shift($aPrio));
-                                        if  (is_numeric($sPrio)) {
-                                            $iPrio = (int) $sPrio;
-                                        } elseif ( $sPrio == 'non-urgent' || $sPrio == 'low' ) {
-                                            $iPrio = 5;
-                                        } elseif ( $sPrio == 'urgent' || $sPrio == 'high' ) {
-                                            $iPrio = 1;
-                                        } else {
-                                            // default is normal priority
-                                            $iPrio = 3;
-                                        }
-                                        $aMsg['x-priority'] = $iPrio;
-                                    }
-                                    break;
-                                case 'content-type':
-                                    $type = $value;
-                                    if ($pos = strpos($type, ";")) {
-                                        $type = substr($type, 0, $pos);
-                                    }
-                                    $type = explode("/", $type);
-                                    if(!is_array($type) || count($type) < 2) {
-                                        $aMsg['content-type'] = array('text','plain');
-                                    } else {
-                                        $aMsg['content-type'] = array(strtolower($type[0]),strtolower($type[1]));
-                                    }
-                                    break;
-                                case 'received':
-                                    $aMsg['received'][] = $value;
-                                    break;
-                                default:
-                                    $aMsg[$field] = $value;
-                                    break;
-                            }
-                        }
-                    }
-                }
+                funzioneCaseBODY();
                 break;
             default:
                 ++$i;
                 break;
             }
         }
-        if (!empty($unique_id)) {
+        l:if (!empty($unique_id)) {
             $msgi = "$unique_id";
             $aMsg['UID'] = $unique_id;
        } else {
@@ -732,9 +722,20 @@ function parsePriority($sValue) {
 /**
  * Retrieves a list with headers, flags, size or internaldate from the imap server
  */
+
+
+
+
+
 function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) {
-    global $squirrelmail_language, $color, $data_dir, $username, $imap_server_type;
-    global $uid_support, $allow_server_sort;
+    $glb = &VarHelper::$glb;
+    $squirrelmail_language = &$glb['squirrelmail_language'];
+$color = &$glb['color'];
+$data_dir = &$glb['data_dir'];
+$username = &$glb['username'];
+
+$uid_support = &$glb['uid_support'];
+$allow_server_sort = &$glb['allow_server_sort'];
     /* Get the small headers for each message in $msg_list */
     $maxmsg = sizeof($msg_list);
     echo $maxmsg;
@@ -794,11 +795,12 @@ function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) 
         $fetch = substr($read,$i_space+1,5);
         if (!is_numeric($id) && $fetch !== 'FETCH') {
             set_up_language($squirrelmail_language);
-            echo '<br /><b><font color="'.$color[2].'">' .
+            $str11= '<br /><b><font color="'.$color[2].'">' .
                  _("ERROR: Could not complete request.") .
                  '</b><br />' .
                  _("Unknown response from IMAP server:") . ' 1.' .
                  htmlspecialchars($read) . "</font><br />\n";
+            echo $str11;
                  break;
         }
         $i = strpos($read,'(',$i_space+5);
@@ -864,63 +866,14 @@ function sqimap_get_small_header_list($imap_stream, $msg_list, $show_num=false) 
                 break;
             case 'BODY.PEEK[HEADER.FIELDS':
             case 'BODY[HEADER.FIELDS':
-                $i = strpos($read,'{',$i);
-                $header = parseString($read,$i);
-                if ($header === false) break 2;
-                /* First we replace all \r\n by \n, and unfold the header */
-                $hdr = trim(str_replace(array("\r\n", "\n\t", "\n "),array("\n", ' ', ' '), $header));
-                /* Now we can make a new header array with */
-                /* each element representing a headerline  */
-                $hdr = explode("\n" , $hdr);
-                foreach ($hdr as $line) {
-                    $pos = strpos($line, ':');
-                    if ($pos > 0) {
-                        $field = strtolower(substr($line, 0, $pos));
-                        if (!strstr($field,' ')) { /* valid field */
-                            $value = trim(substr($line, $pos+1));
-                            switch($field)
-                            {
-                            case 'to': $to = $value; break;
-                            case 'cc': $cc = $value; break;
-                            case 'from': $from = $value; break;
-                            case 'date': $date = $value; break;
-                            case 'x-priority':
-                            case 'importance':
-                            case 'priority':
-                                $priority = parsePriority($value); break;
-                            case 'subject':
-                                $subject = $value;
-                                if ($subject == "") {
-                                    $subject = _("(no subject)");
-                                }
-                                break;
-                            case 'content-type':
-                                $type = strtolower($value);
-                                if ($pos = strpos($type, ";")) {
-                                    $type = substr($type, 0, $pos);
-                                }
-                                $type = explode("/", $type);
-                                if ( empty($type[0]) ) {
-                                    $type[0] = 'text';
-// I had this added, but not committed to CVS.... did it help fix something?
-//                                    $type[1] = 'plain';
-                                }
-                                if ( empty($type[1]) ) {
-                                    $type[1] = 'plain';
-                                }
-                                break;
-                            default: break;
-                            }
-                        }
-                    }
-                }
+                funzioneCaseBODY2();
                 break;
             default:
                 ++$i;
                 break;
             }
         }
-        if (isset($date) || isset($internal_date)) {
+        m:if (isset($date) || isset($internal_date)) {
             if (isset($internal_date)) {
                 $internal_date = str_replace('  ', ' ', $internal_date);
                 $tmpinternal_date  = explode(' ', trim($internal_date));
@@ -1015,7 +968,9 @@ function searchAlternativeRegularPattern($subject) {
  * Obsolete?
  */
 function sqimap_get_headerfield($imap_stream, $field) {
-    global $uid_support, $squirrelmail_language;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
+$squirrelmail_language = &$glb['squirrelmail_language'];
     $sid = sqimap_session_id(false);
     echo $sid;
 
@@ -1041,22 +996,24 @@ function sqimap_get_headerfield($imap_stream, $field) {
         if (!$uid_support) {
             if (!preg_match("/^\\*\s+([0-9]+)\s+FETCH/iAU",$r[0], $regs)) {
                 set_up_language($squirrelmail_language);
-                echo '<br /><b><font color="'.$color[2].'">' .
+                $str12= '<br /><b><font color="'.$color[2].'">' .
                       _("ERROR: Could not complete request.") .
                       '</b><br />' .
                       _("Unknown response from IMAP server:") . ' 1.' .
                       $r[0] . "</font><br />\n";
+                echo $str12;
             } else {
                 $id = $regs[1];
             }
         } else {
             if (!preg_match("/^\\*\s+([0-9]+)\s+FETCH.*UID\s+([0-9]+)\s+/iAU",$r[0], $regs)) {
                 set_up_language($squirrelmail_language);
-                echo '<br /><b><font color="'.$color[2].'">' .
+                $str13= '<br /><b><font color="'.$color[2].'">' .
                      _("ERROR: Could not complete request.") .
                      '</b><br />' .
                      _("Unknown response from IMAP server:") . ' 1.' .
                      $r[0] . "</font><br />\n";
+                echo $str13;
             } else {
                 $id = $regs[2];
             }
@@ -1073,12 +1030,19 @@ function sqimap_get_headerfield($imap_stream, $field) {
  * Returns a message array with all the information about a message.
  * See the documentation folder for more information about this array.
  */
+
+
 function sqimap_get_message($imap_stream, $id, $mailbox) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
+
 
     // typecast to int to prohibit 1:* msgs sets
     $id = (int) $id;
     $flags = array();
+    set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $read = sqimap_run_command($imap_stream, "FETCH $id (FLAGS BODYSTRUCTURE)", true, $response, $message, $uid_support);
     if ($read) {
         if (preg_match('/.+FLAGS\s\((.*)\)\s/AUi',$read[0],$regs)) {
@@ -1088,16 +1052,21 @@ function sqimap_get_message($imap_stream, $id, $mailbox) {
         }
     } else {
         /* the message was not found, maybe the mailbox was modified? */
-        global $sort, $startMessage, $color;
+        $sort = &$glb['sort'];
+$startMessage = &$glb['startMessage'];
+$color = &$glb['color'];
 
         $errmessage = _("The server couldn't find the message you requested.") .
             '<p>'._("Most probably your message list was out of date and the message has been moved away or deleted (perhaps by another program accessing the same mailbox).");
         /* this will include a link back to the message list */
         error_message($errmessage, $mailbox, $sort, (int) $startMessage, $color);
-        exit;
+        trigger_error($errmessage,E_USER_ERROR);
     }
     $bodystructure = implode('',$read);
     $msg =  mime_structure($bodystructure,$flags);
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $read = sqimap_run_command($imap_stream, "FETCH $id BODY[HEADER]", true, $response, $message, $uid_support);
     $rfc822_header = new Rfc822Header();
     $rfc822_header->parseHeader($read);
@@ -1126,10 +1095,14 @@ function sqimap_get_message($imap_stream, $id, $mailbox) {
  *
  */
 function parse_message_entities(&$msg, $id, $imap_stream) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
     if (!empty($msg->entities)) foreach ($msg->entities as $i => $entity) {
         if (is_object($entity) && strtolower(get_class($entity)) == 'message') {
             if (!empty($entity->rfc822_header)) {
+              set_filter(false);
+              set_no_return(false);
+              set_outputstream(false);
                 $read = sqimap_run_command($imap_stream, "FETCH $id BODY[". $entity->entity_id .".HEADER]", true, $response, $message, $uid_support);
                 $rfc822_header = new Rfc822Header();
                 $rfc822_header->parseHeader($read);
@@ -1156,7 +1129,11 @@ function parse_message_entities(&$msg, $id, $imap_stream) {
  * @deprecated Use sqimap_msgs_list_copy() instead.
  */
 function sqimap_messages_copy($imap_stream, $start, $end, $mailbox, $handle_errors=true) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
     $read = sqimap_run_command ($imap_stream, "COPY $start:$end \"$mailbox\"", $handle_errors, $response, $message, $uid_support);
    echo $read;
     return ($response == 'OK');
@@ -1167,8 +1144,13 @@ function sqimap_messages_copy($imap_stream, $start, $end, $mailbox, $handle_erro
  * Deletes specified messages and moves them to trash if possible
  * Obsolete
  */
+
 function sqimap_messages_delete($imap_stream, $start, $end, $mailbox) {
-    global $move_to_trash, $trash_folder, $auto_expunge, $uid_support;
+    $glb = &VarHelper::$glb;
+    $move_to_trash = &$glb['move_to_trash'];
+$trash_folder = &$glb['trash_folder'];
+
+    
 
     if (($move_to_trash == true) && (sqimap_mailbox_exists($imap_stream, $trash_folder) && ($mailbox != $trash_folder))) {
         /**
@@ -1191,7 +1173,11 @@ function sqimap_messages_delete($imap_stream, $start, $end, $mailbox) {
  */
 function sqimap_messages_flag($imap_stream, $start, $end, $flag, $handle_errors) {
     if(empty($flag)){}
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
+    set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $read = sqimap_run_command ($imap_stream, "STORE $start:$end +FLAGS (\\$flag)", $handle_errors, $response, $message, $uid_support);
     echo $read;
 }
@@ -1199,8 +1185,12 @@ function sqimap_messages_flag($imap_stream, $start, $end, $flag, $handle_errors)
 
 /* Remove specified flag from specified messages */
 function sqimap_messages_remove_flag($imap_stream, $start, $end, $flag, $handle_errors) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
     if(empty($flag)){}
+    set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $read = sqimap_run_command ($imap_stream, "STORE $start:$end -FLAGS (\\$flag)", $handle_errors, $response, $message, $uid_support);
     echo $read;
     
@@ -1208,9 +1198,13 @@ function sqimap_messages_remove_flag($imap_stream, $start, $end, $flag, $handle_
 
 
 function sqimap_toggle_flag($imap_stream, $id, $flag, $set, $handle_errors) {
-    global $uid_support;
+    $glb = &VarHelper::$glb;
+    $uid_support = &$glb['uid_support'];
     $msgs_id = sqimap_message_list_squisher($id);
     $set_string = ($set ? '+' : '-');
+    set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $read = sqimap_run_command ($imap_stream, "STORE $msgs_id ".$set_string."FLAGS ($flag)", $handle_errors, $response, $message, $uid_support);
     echo $read;
     
@@ -1225,3 +1219,129 @@ function sqimap_get_small_header($imap_stream, $id, $sent) {
     return $res[0];
 }
 
+function funzioneCaseBODY(){
+                $i = strpos($read,'{',$i); // header is always returned as literal because it contain \n characters
+                $header = parseString($read,$i);
+                if ($header === false) goto l;
+                /* First we replace all \r\n by \n, and unfold the header */
+                $hdr = trim(str_replace(array("\r\n", "\n\t", "\n "),array("\n", ' ', ' '), $header));
+                /* Now we can make a new header array with
+                   each element representing a headerline  */
+                $aHdr = explode("\n" , $hdr);
+                $aReceived = array();
+                print_r($aReceived);
+                foreach ($aHdr as $line) {
+                    $pos = strpos($line, ':');
+                    if ($pos > 0) {
+                        $field = strtolower(substr($line, 0, $pos));
+                        if (!strstr($field,' ')) { /* valid field */
+                            $value = trim(substr($line, $pos+1));
+                            switch($field) {
+                                case 'date':
+                                    $aMsg['date'] = trim(str_replace('  ', ' ', $value));
+                                    break;
+                                case 'x-priority': $aMsg['x-priority'] = ($value) ? (int) $value{0} : 3; break;
+                                case 'priority':
+                                case 'importance':
+                                    funzioneCaseImportance();
+                                    break;
+                                case 'content-type':
+                                    funzioneCaseContentType();
+                                    break;
+                                case 'received':
+                                    $aMsg['received'][] = $value;
+                                    break;
+                                default:
+                                    $aMsg[$field] = $value;
+                                    break;
+                            }
+                        }
+                    }
+                }
+}
+function funzioneCaseImportance(){
+                                    // duplicate code with Rfc822Header.cls:parsePriority()
+                                    if (!isset($aMsg['x-priority'])) {
+                                        $aPrio = preg_split('/\s/',trim($value));
+                                        $sPrio = strtolower(array_shift($aPrio));
+                                        if  (is_numeric($sPrio)) {
+                                            $iPrio = (int) $sPrio;
+                                        } elseif ( $sPrio == 'non-urgent' || $sPrio == 'low' ) {
+                                            $iPrio = 5;
+                                        } elseif ( $sPrio == 'urgent' || $sPrio == 'high' ) {
+                                            $iPrio = 1;
+                                        } else {
+                                            // default is normal priority
+                                            $iPrio = 3;
+                                        }
+                                        $aMsg['x-priority'] = $iPrio;
+                                    }
+}
+
+function funzioneCaseContentType(){
+                                    $type = $value;
+                                    if ($pos = strpos($type, ";")) {
+                                        $type = substr($type, 0, $pos);
+                                    }
+                                    $type = explode("/", $type);
+                                    if(!is_array($type) || count($type) < 2) {
+                                        $aMsg['content-type'] = array('text','plain');
+                                    } else {
+                                        $aMsg['content-type'] = array(strtolower($type[0]),strtolower($type[1]));
+                                    }
+}
+function funzioneCaseBODY2(){
+                $i = strpos($read,'{',$i);
+                $header = parseString($read,$i);
+                if ($header === false) goto m;
+                /* First we replace all \r\n by \n, and unfold the header */
+                $hdr = trim(str_replace(array("\r\n", "\n\t", "\n "),array("\n", ' ', ' '), $header));
+                /* Now we can make a new header array with */
+                /* each element representing a headerline  */
+                $hdr = explode("\n" , $hdr);
+                foreach ($hdr as $line) {
+                    $pos = strpos($line, ':');
+                    if ($pos > 0) {
+                        $field = strtolower(substr($line, 0, $pos));
+                        if (!strstr($field,' ')) { /* valid field */
+                            $value = trim(substr($line, $pos+1));
+                            switch($field)
+                            {
+                            case 'to': $to = $value; break;
+                            case 'cc': $cc = $value; break;
+                            case 'from': $from = $value; break;
+                            case 'date': $date = $value; break;
+                            case 'x-priority':
+                            case 'importance':
+                            case 'priority':
+                                $priority = parsePriority($value); break;
+                            case 'subject':
+                                $subject = $value;
+                                if ($subject == "") {
+                                    $subject = _("(no subject)");
+                                }
+                                break;
+                            case 'content-type':
+                                funzioneCaseContentType2();
+                                break;
+                            default: break;
+                            }
+                        }
+                    }
+                }
+}
+function funzioneCaseContentType2(){
+                                $type = strtolower($value);
+                                if ($pos = strpos($type, ";")) {
+                                    $type = substr($type, 0, $pos);
+                                }
+                                $type = explode("/", $type);
+                                if ( empty($type[0]) ) {
+                                    $type[0] = 'text';
+// I had this added, but not committed to CVS.... did it help fix something?
+//                                    $type[1] = 'plain';
+                                }
+                                if ( empty($type[1]) ) {
+                                    $type[1] = 'plain';
+                                }
+}

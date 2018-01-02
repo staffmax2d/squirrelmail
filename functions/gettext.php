@@ -19,6 +19,10 @@
 /** Almost everything requires global.php... */
 (require_once SM_PATH . 'functions/global.php');
 
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
 global $gettext_php_domain, $gettext_php_dir, $gettext_php_loaded,
  $gettext_php_translateStrings, $gettext_php_loaded_language,
  $gettext_php_short_circuit;
@@ -56,9 +60,14 @@ if (! isset($gettext_php_short_circuit)) {
  * @internal function is used internally by functions/gettext.php code
  */
 function gettext_php_load_strings() {
-    global $squirrelmail_language, $gettext_php_translateStrings,
-        $gettext_php_domain, $gettext_php_dir, $gettext_php_loaded,
-        $gettext_php_loaded_language, $gettext_php_short_circuit;
+    $glb = &VarHelper::$glb;
+$squirrelmail_language = &$glb['squirrelmail_language'];
+$gettext_php_translateStrings = &$glb['gettext_php_translateStrings'];
+$gettext_php_domain = &$glb['gettext_php_domain'];
+$gettext_php_dir = &$glb['gettext_php_dir'];
+$gettext_php_loaded = &$glb['gettext_php_loaded'];
+$gettext_php_loaded_language = &$glb['gettext_php_loaded_language'];
+$gettext_php_short_circuit = &$glb['gettext_php_short_circuit'];
     
     /*
      * $squirrelmail_language gives 'en' for English, 'de' for German,
@@ -159,9 +168,12 @@ function gettext_php_load_strings() {
  * @return string translated string
  */
 function _($str) {
-    global $gettext_php_loaded, $gettext_php_translateStrings, 
-        $squirrelmail_language, $gettext_php_loaded_language,
-        $gettext_php_short_circuit;
+    $glb = &VarHelper::$glb;
+$gettext_php_loaded = &$glb['gettext_php_loaded'];
+$gettext_php_translateStrings = &$glb['gettext_php_translateStrings'];
+$squirrelmail_language = &$glb['squirrelmail_language'];
+$gettext_php_loaded_language = &$glb['gettext_php_loaded_language'];
+$gettext_php_short_circuit = &$glb['gettext_php_short_circuit'];
     
     if (! $gettext_php_loaded || 
         $gettext_php_loaded_language != $squirrelmail_language) {
@@ -217,7 +229,10 @@ function _($str) {
  * @return string path to translation directory
  */
 function bindtextdomain($name, $dir) {
-    global $gettext_php_domain, $gettext_php_dir, $gettext_php_loaded;
+    $glb = &VarHelper::$glb;
+$gettext_php_domain = &$glb['gettext_php_domain'];
+$gettext_php_dir = &$glb['gettext_php_dir'];
+$gettext_php_loaded = &$glb['gettext_php_loaded'];
     
     if ($gettext_php_domain != $name) {
         $gettext_php_domain = $name;
@@ -241,7 +256,10 @@ function bindtextdomain($name, $dir) {
  * @return string gettext domain name
  */
 function textdomain($name = false) {
-    global $gettext_php_domain, $gettext_php_loaded;
+    
+$glb = &VarHelper::$glb;
+$gettext_php_domain = &$glb['gettext_php_domain'];
+$gettext_php_loaded = &$glb['gettext_php_loaded'];
     
     if ($name != false && $gettext_php_domain != $name) {
         $gettext_php_domain = $name;

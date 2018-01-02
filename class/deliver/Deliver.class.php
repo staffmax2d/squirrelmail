@@ -26,6 +26,11 @@
  * @author  Marc Groot Koerkamp
  * @package squirrelmail
  */
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
+
 class Deliver {
 
     /**
@@ -72,6 +77,8 @@ class Deliver {
      *                 written) to the output stream.
      *
      */
+    
+    
     function mail(&$message, $stream=false, $reply_id=0, $reply_ent_id=0, 
                   $imap_stream=NULL, $extra=NULL) {
 
@@ -89,8 +96,13 @@ class Deliver {
         // calculate reply header if needed
         //
         if ($reply_id) {
-            global $imapConnection, $username, $key, $imapServerAddress, 
-                   $imapPort, $mailbox;
+            $glb = &VarHelper::$glb;
+$imapConnection = &$glb['imapConnection'];
+$username = &$glb['username'];
+$key = &$glb['key'];
+$imapServerAddress = &$glb['imapServerAddress'];
+$imapPort = &$glb['imapPort'];
+$mailbox = &$glb['mailbox'];
 
             // try our best to use an existing IMAP handle
             //
@@ -278,7 +290,9 @@ class Deliver {
                 }
                 $last = $body_part;
             } elseif ($message->att_local_name) {
-                global $username, $attachment_dir;
+                $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$attachment_dir = &$glb['attachment_dir'];
                 $hashed_attachment_dir = getHashedDir($username, $attachment_dir);
                 $filename = $message->att_local_name;
 
@@ -336,7 +350,9 @@ class Deliver {
                     $this->writeToStream($stream, $body_part);
                 }
             } elseif ($message->att_local_name) {
-                global $username, $attachment_dir;
+                $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$attachment_dir = &$glb['attachment_dir'];
                 $hashed_attachment_dir = getHashedDir($username, $attachment_dir);
                 $filename = $message->att_local_name;
                 $file = fopen ($hashed_attachment_dir . '/' . $filename, 'rb');
@@ -511,7 +527,9 @@ class Deliver {
             // (see RFC 2822/2.1.1)
             //
             if (!empty($message->att_local_name)) { // is this redundant? I have no idea
-                global $username, $attachment_dir;
+                $glb = &VarHelper::$glb;
+$username = &$glb['username'];
+$attachment_dir = &$glb['attachment_dir'];
                 $hashed_attachment_dir = getHashedDir($username, $attachment_dir);
                 $filename = $hashed_attachment_dir . '/' . $message->att_local_name;
 
@@ -574,7 +592,13 @@ class Deliver {
      * @return string $header
      */
     function prepareRFC822_Header(&$rfc822_header, $reply_rfc822_header, &$raw_length) {
-        global $domain, $version, $username, $encode_header_key, $edit_identity, $hide_auth_header;
+        $glb = &VarHelper::$glb;
+$domain = &$glb['domain'];
+$version = &$glb['version'];
+$username = &$glb['username'];
+$encode_header_key = &$glb['encode_header_key'];
+$edit_identity = &$glb['edit_identity'];
+$hide_auth_header = &$glb['hide_auth_header'];
 
         if (! isset($hide_auth_header)) $hide_auth_header=false;
 
@@ -882,7 +906,7 @@ class Deliver {
 
             // look for a token as close to the end of the soft wrap limit as possible
             //
-            foreach ($whitespace as $token) {
+            a:foreach ($whitespace as $token) {
 
                 // note that this if statement also fails when $pos === 0,
                 // which is intended, since blank lines are not allowed
@@ -893,7 +917,7 @@ class Deliver {
 
                     // make sure proposed fold doesn't create a blank line
                     //
-                    if (!trim($new_fold)) continue;
+                    if (!trim($new_fold)) goto a;
 
                     // with whitespace breaks, we fold BEFORE the token
                     //
@@ -923,14 +947,14 @@ class Deliver {
                 // is possible we don't want the first one we find
                 //
                 $pos = $soft_wrap - 1; // -1 is corrected by +1 on next line
-                while ($pos = strpos($hard_wrapped_line, $token, $pos + 1))
+                b:while ($pos = strpos($hard_wrapped_line, $token, $pos + 1))
                 {
 
                     $new_fold = substr($header, 0, $pos);
 
                     // make sure proposed fold doesn't create a blank line
                     //
-                    if (!trim($new_fold)) continue;
+                    if (!trim($new_fold)) goto b;
 
                     // with whitespace breaks, we fold BEFORE the token
                     //
@@ -956,7 +980,7 @@ class Deliver {
             // otherwise, we can't quit yet - look for a "hard" token
             // as close to the end of the hard wrap limit as possible
             //
-            foreach ($hard_break_tokens as $token) {
+            c:foreach ($hard_break_tokens as $token) {
 
                 // note that this if statement also fails when $pos === 0,
                 // which is intended, since blank lines are not allowed
@@ -1008,7 +1032,7 @@ class Deliver {
                     // not at the beginning of the line, as blank
                     // lines are not allowed
                     //
-                    if ($pos === 0) continue;
+                    if ($pos === 0) goto c;
 
                     // we are dealing with a simple token break...
                     //
@@ -1092,7 +1116,9 @@ class Deliver {
      * @return string $result with timezone and offset
      */
     function timezone () {
-        global $invert_time, $show_timezone_name;
+        $glb = &VarHelper::$glb;
+$invert_time = &$glb['invert_time'];
+$show_timezone_name = &$glb['show_timezone_name'];
 
         $diff_second = date('Z');
         if ($invert_time) {

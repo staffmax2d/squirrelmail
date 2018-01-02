@@ -36,10 +36,16 @@ function parse_viewheader($imapConnection,$id, $passed_ent_id) {
     $first = array();
 
     if (!$passed_ent_id) {
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $read=sqimap_run_command ($imapConnection, "FETCH $id BODY[HEADER]", 
                               true, $a, $b, $uid_support);
     } else {
         $query = "FETCH $id BODY[".$passed_ent_id.'.HEADER]';
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $read=sqimap_run_command ($imapConnection, $query, 
                               true, $a, $b, $uid_support);
     }    

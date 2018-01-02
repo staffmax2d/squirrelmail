@@ -46,17 +46,10 @@ if ((bool) ini_get('register_globals') &&
         case '_SERVER':
         case 'HTTP_ENV_VARS':
         case '_ENV':
-        case 'HTTP_POST_FILES':
-        case '_FILES':
-        case '_REQUEST':
-        case 'HTTP_SESSION_VARS':
-        case '_SESSION':
-        case 'GLOBALS':
-        case 'key':
-        case 'value':
             break;
         default:
-            unset($GLOBALS[$key]);
+            selezione5($key);
+            break;
         }
     }
     // Unset variables used in foreach
@@ -71,7 +64,7 @@ if ((bool) ini_get('register_globals') &&
  */
 $php_session_auto_start = ini_get('session.auto_start');
 if ((bool)$php_session_auto_start && $php_session_auto_start != 'off') {
-    die('SquirrelMail 1.4.x is not compatible with PHP\'s session.auto_start setting.  Please disable it at least for the location where SquirrelMail is installed.');
+    trigger_error('SquirrelMail 1.4.x is not compatible with PHP\'s session.auto_start setting.  Please disable it at least for the location where SquirrelMail is installed.',E_USER_NOTICE);
 }
 
 /**
@@ -145,6 +138,11 @@ if(isset($session_name) && $session_name) {
     ini_set('session.name' , 'SQMSESSID');
 }
 
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
+
 /**
  * If magic_quotes_runtime is on, SquirrelMail breaks in new and creative ways.
  * Force magic_quotes_runtime off.
@@ -192,9 +190,13 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
  * @param int c release number
  * @return bool
  */
+
+
 function check_php_version ($a = '0', $b = '0', $c = '0')
 {
-    global $SQ_PHP_VERSION;
+    
+$glb = &VarHelper::$glb;
+    $SQ_PHP_VERSION = &$glb['SQ_PHP_VERSION'];
 
     if(!isset($SQ_PHP_VERSION))
         $SQ_PHP_VERSION = substr( str_pad( preg_replace('/\D/','', PHP_VERSION), 3, '0'), 0, 3);
@@ -213,9 +215,12 @@ function check_php_version ($a = '0', $b = '0', $c = '0')
  * @param int c release number
  * @return bool
  */
+
 function check_sm_version($a = 0, $b = 0, $c = 0)
 {
-    global $SQM_INTERNAL_VERSION;
+    
+$glb = &VarHelper::$glb;
+    $SQM_INTERNAL_VERSION = &$glb['SQM_INTERNAL_VERSION'];
     if ( !isset($SQM_INTERNAL_VERSION) ||
          $SQM_INTERNAL_VERSION[0] < $a ||
          ( $SQM_INTERNAL_VERSION[0] == $a &&
@@ -399,6 +404,7 @@ function sqgetGlobalVar($name, &$value, $search = SQ_INORDER) {
  * Deletes an existing session, more advanced than the standard PHP
  * session_destroy(), it explicitly deletes the cookies and global vars.
  */
+
 function sqsession_destroy() {
 
     /*
@@ -412,9 +418,12 @@ function sqsession_destroy() {
      * merging of sessions.
      */
 
-    global $base_uri;
+$glb = &VarHelper::$glb;
+    $base_uri = &$glb['base_uri'];
 
     if (isset($_COOKIE[session_name()])) {
+        set_bHttpOnly(true);
+         set_bReplace(false);
         sqsetcookie(session_name(), $_COOKIE[session_name()], 1, $base_uri);
 
         /*
@@ -426,10 +435,15 @@ function sqsession_destroy() {
          *     or fixate the $base_uri cookie, so we don't worry about
          *     trying to delete all of them here.
          */
+        set_bHttpOnly(true);
+        set_bReplace(false);
         sqsetcookie(session_name(), $_COOKIE[session_name()], 1, $base_uri . 'src');
+        set_bHttpOnly(true);
+        set_bReplace(false);
         sqsetcookie(session_name(), $_COOKIE[session_name()], 1, $base_uri . 'src/');
     }
-
+    set_bHttpOnly(true);
+    set_bReplace(false);
     if (isset($_COOKIE['key'])) sqsetcookie('key', 'SQMTRASH', 1, $base_uri);
 
     /* Make sure new session id is generated on subsequent session_start() */
@@ -472,7 +486,9 @@ function sqsession_is_active() {
  *
  */
 function sqsession_start() {
-    global $base_uri;
+    
+$glb = &VarHelper::$glb;
+    $base_uri = &$glb['base_uri'];
 
     session_set_cookie_params (0, $base_uri);
     error_reporting(0);
@@ -487,8 +503,12 @@ function sqsession_start() {
     // has become just a passthru to this function, so the sqsetcookie()
     // below is called every time, even after headers have already been sent
     //
-    if (!headers_sent())
-       sqsetcookie(session_name(),$session_id,false,$base_uri);
+    if (!headers_sent()){
+        set_bHttpOnly(true);
+        set_bReplace(false);
+     sqsetcookie(session_name(),$session_id,false,$base_uri);
+    }
+      
 }
 
 /**
@@ -512,11 +532,40 @@ function sqsession_start() {
  * @since 1.4.16 and 1.5.1
  *
  */
+
+$bHttpOnly=true;
+$bReplace=false;
+
+function set_bHttpOnly($value){
+    VarHelper::$bHttpOnly = $value;
+}
+
+function get_bHttpOnly(){
+    return VarHelper::$bHttpOnly;
+}
+
+function set_bReplace($value){
+    VarHelper::$bReplace = $value;
+}
+
+function get_bReplace(){
+    return VarHelper::$bReplace;
+}
+
+
+
+
+
 function sqsetcookie($sName, $sValue='deleted', $iExpire=0, $sPath="", $sDomain="",
-                     $bSecure=false, $bHttpOnly=true, $bReplace=false) {
+                     $bSecure=false) {
+    
+    $bHttpOnly = get_bHttpOnly();
+    $bReplace = get_bReplace();
+    
+$glb = &VarHelper::$glb;
 
     // if we have a secure connection then limit the cookies to https only.
-    global $is_secure_connection;
+    $is_secure_connection = &$glb['is_secure_connection'];
     if ($sName && $is_secure_connection)
         $bSecure = true;
 
@@ -528,7 +577,7 @@ function sqsetcookie($sName, $sValue='deleted', $iExpire=0, $sPath="", $sDomain=
     // but we want to default people who upgrade to true due to security
     // implications of setting this to false)
     //
-    global $only_secure_cookies;
+    $only_secure_cookies = &$glb['only_secure_cookies'];
     if (!isset($only_secure_cookies)) $only_secure_cookies = true;
     if (!$only_secure_cookies)
         $bSecure = false;
@@ -587,9 +636,14 @@ function sqsetcookie($sName, $sValue='deleted', $iExpire=0, $sPath="", $sDomain=
  * @since 1.4.17 and 1.5.2 
  *
  */
+
+
 function is_ssl_secured_connection()
 { 
-    global $sq_ignore_http_x_forwarded_headers, $sq_https_port;
+    
+$glb = &VarHelper::$glb;
+    $sq_ignore_http_x_forwarded_headers = &$glb['sq_ignore_http_x_forwarded_headers'];
+$sq_https_port = &$glb['sq_https_port'];
     $https_env_var = getenv('HTTPS');
     if ($sq_ignore_http_x_forwarded_headers
      || !sqgetGlobalVar('HTTP_X_FORWARDED_PROTO', $forwarded_proto, SQ_SERVER))
@@ -636,3 +690,19 @@ function file_has_long_lines($filename, $max_length) {
     return FALSE;
 }
 
+function selezione5($p){
+    switch ($p) {
+        case 'HTTP_POST_FILES':
+        case '_FILES':
+        case '_REQUEST':
+        case 'HTTP_SESSION_VARS':
+        case '_SESSION':
+        case 'GLOBALS':
+        case 'key':
+        case 'value':
+            break;
+        default:
+            unset($GLOBALS[$p]);
+            break;
+    }
+}

@@ -17,9 +17,14 @@
  */
 (require_once SM_PATH . 'functions/plugin.php');
 
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
 function error_message($message, $mailbox, $sort, $startMessage, $color) {
 
-    global $default_folder_prefix;
+    $glb = &VarHelper::$glb;
+$default_folder_prefix = &$glb['default_folder_prefix'];
 
     $urlMailbox = urlencode($mailbox);
     $string = '<tr><td align="center">' . $message . '</td></tr>'.
@@ -42,9 +47,18 @@ function plain_error_message($message, $color) {
 }
 
 function logout_error( $errString, $errTitle = '' ) {
-    global $frame_top, $org_logo, $org_name, $org_logo_width, $org_logo_height,
-           $hide_sm_attributions, $version, $squirrelmail_language, 
-           $color, $theme, $theme_default;
+    $glb = &VarHelper::$glb;
+$frame_top = &$glb['frame_top'];
+$org_logo = &$glb['org_logo'];
+$org_name = &$glb['org_name'];
+$org_logo_width = &$glb['org_logo_width'];
+$org_logo_height = &$glb['org_logo_height'];
+$hide_sm_attributions = &$glb['hide_sm_attributions'];
+$version = &$glb['version'];
+$squirrelmail_language = &$glb['squirrelmail_language'];
+$color = &$glb['color'];
+$theme = &$glb['theme'];
+$theme_default = &$glb['theme_default'];
 
     (include_once SM_PATH . 'functions/page_header.php' );
 
@@ -91,14 +105,15 @@ function logout_error( $errString, $errTitle = '' ) {
 
     displayHtmlHeader( $org_name.' - '.$errTitle, '', false );
 
-    echo '<body text="'.$color[8].'" bgcolor="'.$color[4].'" link="'.$color[7].'" vlink="'.$color[7].'" alink="'.$color[7]."\">\n\n".
+    $str6= '<body text="'.$color[8].'" bgcolor="'.$color[4].'" link="'.$color[7].'" vlink="'.$color[7].'" alink="'.$color[7]."\">\n\n".
          '<center>';
+    echo $str6;
 
     if (isset($org_logo) && ($org_logo != '')) {
         echo '<img src="'.$org_logo.'" alt="'.sprintf(_("%s Logo"), $org_name).
              "\"$width_and_height /><br />\n";
     }
-    echo ( $hide_sm_attributions ? '' :
+    $str7= ( $hide_sm_attributions ? '' :
             '<small>' . sprintf (_("SquirrelMail version %s"), $version) . '<br />'.
             _("By the SquirrelMail Project Team") . "<br /></small>\n" ).
          '<table cellspacing="1" cellpadding="0" bgcolor="'.$color[1].'" width="70%">'.
@@ -113,10 +128,13 @@ function logout_error( $errString, $errTitle = '' ) {
          '<a href="'.$logout_link.'" target="'.$frame_top.'">'.
          _("Go to the login page") . '</a></b></font></td></tr>'.
          '</table></td></tr></table></center></body></html>';
+    echo $str7;
 }
 
 function error_box($string, $color) {
-    global $pageheader_sent, $org_title;
+    $glb = &VarHelper::$glb;
+$pageheader_sent = &$glb['pageheader_sent'];
+$org_title = &$glb['org_title'];
 
     if ( !isset( $color ) ) {
         $color = array();
@@ -148,7 +166,7 @@ function error_box($string, $color) {
         echo "<body text=\"$color[8]\" bgcolor=\"$color[4]\" link=\"$color[7]\" vlink=\"$color[7]\" alink=\"$color[7]\">\n\n";
     }
 
-    echo '<table width="100%" cellpadding="1" cellspacing="0" align="center" border="0" bgcolor="'.$color[9].'">'.
+    $str8= '<table width="100%" cellpadding="1" cellspacing="0" align="center" border="0" bgcolor="'.$color[9].'">'.
          '<tr><td>'.
          '<table width="100%" cellpadding="0" cellspacing="0" align="center" border="0" bgcolor="'.$color[4].'">'.
          '<tr><td align="center" bgcolor="'.$color[0].'">'.
@@ -157,6 +175,7 @@ function error_box($string, $color) {
          '<table cellpadding="1" cellspacing="5" align="center" border="0">'.
          '<tr>' . html_tag( 'td', $string."\n", 'left') . '</tr></table>'.
          '</td></tr></table></td></tr></table>';
+    echo $str8;
 }
 
 /**
@@ -165,7 +184,9 @@ function error_box($string, $color) {
  * @since 1.5.1 and 1.4.5
  */
 function error_option_save($message) {
-    global $optpage_save_error;
+   
+$glb = &VarHelper::$glb;
+$optpage_save_error = &$glb['optpage_save_error'];
 
     if (! is_array($optpage_save_error) )
         $optpage_save_error=array();

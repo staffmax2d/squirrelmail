@@ -33,6 +33,10 @@ $FileExtensionToMimeType = array('bmp'  => 'image/x-bitmap',
                                  'patch'=> 'text/plain',
                                  'vcf'  => 'text/x-vcard');
 
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
 /* Register browser-supported image types */
 sqgetGlobalVar('attachment_common_types', $attachment_common_types);
 if (isset($attachment_common_types)) {
@@ -96,15 +100,19 @@ register_attachment_common('application/octet-stream', 'octet_stream');
 /* Function which optimizes readability of the above code */
 
 function register_attachment_common($type, $func) {
-    global $squirrelmail_plugin_hooks;
+    
+$glb = &VarHelper::$glb;
+    $squirrelmail_plugin_hooks = &$glb['squirrelmail_plugin_hooks'];
     $squirrelmail_plugin_hooks['attachment ' . $type]['attachment_common'] =
                       'attachment_common_' . $func;
 }
 
 
 function attachment_common_link_text(&$Args) {
+    
+$glb = &VarHelper::$glb;
 
-    global $squirrelmail_attachments_finished_handling;
+    $squirrelmail_attachments_finished_handling = &$glb['squirrelmail_attachments_finished_handling'];
     if (!empty($squirrelmail_attachments_finished_handling[$Args[7]])) return;
     $squirrelmail_attachments_finished_handling[$Args[7]] = TRUE;
 
@@ -140,8 +148,10 @@ function attachment_common_link_text(&$Args) {
 }
 
 function attachment_common_link_message(&$Args) {
+    
+$glb = &VarHelper::$glb;
 
-    global $squirrelmail_attachments_finished_handling;
+    $squirrelmail_attachments_finished_handling = &$glb['squirrelmail_attachments_finished_handling'];
     if (!empty($squirrelmail_attachments_finished_handling[$Args[7]])) return;
     $squirrelmail_attachments_finished_handling[$Args[7]] = TRUE;
 
@@ -157,7 +167,8 @@ function attachment_common_link_message(&$Args) {
 
 function attachment_common_link_html(&$Args) {
 
-    global $squirrelmail_attachments_finished_handling;
+$glb = &VarHelper::$glb;
+    $squirrelmail_attachments_finished_handling = &$glb['squirrelmail_attachments_finished_handling'];
     if (!empty($squirrelmail_attachments_finished_handling[$Args[7]])) return;
     $squirrelmail_attachments_finished_handling[$Args[7]] = TRUE;
 
@@ -175,13 +186,16 @@ function attachment_common_link_html(&$Args) {
     $Args[6] = $Args[1]['attachment_common']['href'];
 }
 
+
 function attachment_common_link_image(&$Args) {
 
-    global $squirrelmail_attachments_finished_handling;
+$glb = &VarHelper::$glb;
+    $squirrelmail_attachments_finished_handling = &$glb['squirrelmail_attachments_finished_handling'];
     if (!empty($squirrelmail_attachments_finished_handling[$Args[7]])) return;
     $squirrelmail_attachments_finished_handling[$Args[7]] = TRUE;
 
-    global $attachment_common_show_images, $attachment_common_show_images_list;
+  
+$attachment_common_show_images_list = &$glb['attachment_common_show_images_list'];
 
     sqgetGlobalVar('QUERY_STRING', $QUERY_STRING, SQ_SERVER);
 
@@ -204,7 +218,8 @@ function attachment_common_link_image(&$Args) {
 
 function attachment_common_link_vcard(&$Args) {
 
-    global $squirrelmail_attachments_finished_handling;
+$glb = &VarHelper::$glb;
+    $squirrelmail_attachments_finished_handling = &$glb['squirrelmail_attachments_finished_handling'];
     if (!empty($squirrelmail_attachments_finished_handling[$Args[7]])) return;
     $squirrelmail_attachments_finished_handling[$Args[7]] = TRUE;
 
@@ -222,7 +237,9 @@ function attachment_common_link_vcard(&$Args) {
 
 
 function attachment_common_octet_stream(&$Args) {
-    global $FileExtensionToMimeType;
+    
+$glb = &VarHelper::$glb;
+    $FileExtensionToMimeType = &$glb['FileExtensionToMimeType'];
 
     do_hook('attachment_common-load_mime_types');
 

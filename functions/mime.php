@@ -110,6 +110,10 @@ function mime_fetch_body($imap_stream, $id, $ent_id=1, $fetch_size=0) {
     }
 
     if ($fetch_size!=0) $cmd .= "<0.$fetch_size>";
+    
+    set_filter(false);
+    set_no_return(false);
+    set_outputstream(false);
 
     $data = sqimap_run_command ($imap_stream, $cmd, true, $response, $message, $uid_support);
     do {
@@ -151,7 +155,10 @@ function mime_fetch_body($imap_stream, $id, $ent_id=1, $fetch_size=0) {
             '<tr><td><b>' . _("Message:") . "</td><td>$message</td></tr>" .
             '<tr><td><b>' . _("FETCH line:") . "</td><td>$topline</td></tr>" .
             "</table><br /></tt></font><hr />";
-
+        
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $data = sqimap_run_command ($imap_stream, "FETCH $passed_id BODY[]", true, $response, $message, $uid_support);
         array_shift($data);
         $wholemessage = implode('', $data);
@@ -180,7 +187,10 @@ function mime_print_body_lines ($imap_stream, $id, $ent_id=1, $encoding, $rStrea
         } else {
             $query = "FETCH $id BODY[$ent_id]";
         }
-        sqimap_run_command($imap_stream,$query,true,$response,$message,$uid_support,'sqimap_base64_decode',$rStream,true);
+        set_filter('sqimap_base64_decode');
+        set_no_return($rStream);
+        set_outputstream(true);
+        sqimap_run_command($imap_stream,$query,true,$response,$message,$uid_support);
    } else {
         $body = mime_fetch_body ($imap_stream, $id, $ent_id);
         if ($rStream !== 'php://stdout') {

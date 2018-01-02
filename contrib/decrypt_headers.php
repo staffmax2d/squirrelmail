@@ -54,34 +54,40 @@ function hex2ip($hex) {
 /** create page headers */
 header('Content-Type: text/html');
 
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
+$str1= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
     ."\n<head>\n<meta name=\"robots\" content=\"noindex,nofollow\">\n"
     ."</head><body>";
+echo $str1;
+    
 
 if (sqgetGlobalVar('submit',$submit,SQ_POST)) {
     $continue = TRUE;
     if (! sqgetGlobalVar('secret',$secret,SQ_POST) ||
         empty($secret)) {
         $continue = FALSE;
-        echo "<p>You must enter an encryption key.</p>\n";
+        $str2= "<p>You must enter an encryption key.</p>\n";
+        echo $str2;
     }
     if (! sqgetGlobalVar('enc_string',$enc_string,SQ_POST) ||
         empty($enc_string)) {
         $continue = FALSE;
-        echo "<p>You must enter an encrypted string.</p>\n";
+        $str3= "<p>You must enter an encrypted string.</p>\n";
+        echo $str3;
     }
 
     if ($continue) {
         if (isset($enc_string) && ! base64_decode($enc_string)) {
-            echo "<p>Encrypted string should be BASE64 encoded.<br />\n"
+            $str4= "<p>Encrypted string should be BASE64 encoded.<br />\n"
                 ."Please enter all characters that are listed after header name.</p>\n";
+            echo $str4;
         } elseif (isset($secret)) {
             $string=OneTimePadDecrypt($enc_string,base64_encode($secret));
 
             if (sqgetGlobalVar('ip_addr',$is_addr,SQ_POST)) {
                 $string=hex2ip($string);
             }
-            echo "<p>Decoded string: ".htmlspecialchars($string)."</p>\n";
+            $str5= "<p>Decoded string: ".htmlspecialchars($string)."</p>\n";
+            echo $str5;
         }
     }
     echo "<hr />";

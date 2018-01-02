@@ -70,6 +70,9 @@ function attachSelectedMessages($msg, $imapConnection) {
         if (isset($msg[$i])) {
             $id = $msg[$i];
             
+            set_filter(false);
+            set_no_return(false);
+            set_outputstream(false);
             $body_a = sqimap_run_command($imapConnection, "FETCH $id RFC822",true, $response, $readmessage, $uid_support);
             
             if ($response == 'OK') {

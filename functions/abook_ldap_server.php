@@ -36,6 +36,12 @@
  * @package squirrelmail
  * @subpackage addressbook
  */
+
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
+
+
 class abook_ldap_server extends addressbook_backend {
     /**
      * @var string backend type
@@ -215,7 +221,9 @@ class abook_ldap_server extends addressbook_backend {
      * @return string converted string
      */
     function charset_encode($str) {
-        global $default_charset;
+        
+$glb = &VarHelper::$glb;
+$default_charset = &$glb['default_charset'];
         if($this->charset != $default_charset) {
             return charset_convert($default_charset,$str,$this->charset,false);
         } else {
@@ -231,7 +239,9 @@ class abook_ldap_server extends addressbook_backend {
      * @return string converted string
      */
     function charset_decode($str) {
-        global $default_charset;
+        
+$glb = &VarHelper::$glb;
+$default_charset = &$glb['default_charset'];
         if ($this->charset != $default_charset) {
             return charset_convert($this->charset,$str,$default_charset,false);
         } else {

@@ -539,7 +539,9 @@ if ($search_all == 'all') {
             $mailbox = $boxes[$x]['unformatted'];
             if (($submit == _("Search") || $submit == 'Search_no_update') && !empty($what)) {
                 sqimap_mailbox_select($imapConnection, $mailbox);
-                $msgs = sqimap_search($imapConnection, $where, $what, $mailbox, $color, $search_all, $count_all, 0);
+                set_count_all($count_all);
+                set_search_position(0);
+                $msgs = sqimap_search($imapConnection, $where, $what, $mailbox, $color, $search_all);
                 $count_all = count($msgs);
                 printSearchMessages($msgs, $mailbox, $count_all, $imapConnection,
                                     $where, $what, false, false);
@@ -564,7 +566,9 @@ else {
         echo '<br />'
         . html_tag( 'div', '<b>' . _("Search Results") . '</b>', 'center' ) . "\n";
         sqimap_mailbox_select($imapConnection, $mailbox);
-        $msgs = sqimap_search($imapConnection, $where, $what, $mailbox, $color, $search_all, $count_all, 0);
+         set_count_all($count_all);
+         set_search_position(0);
+        $msgs = sqimap_search($imapConnection, $where, $what, $mailbox, $color, $search_all);
         if (count($msgs)) {
             printSearchMessages($msgs, $mailbox, count($msgs), $imapConnection,
                                 $where, $what, false, false);

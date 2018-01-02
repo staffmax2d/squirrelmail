@@ -73,10 +73,18 @@ function CalcEntity($entString, $direction) {
 
 $imapConnection = sqimap_login($username, $key, $imapServerAddress, $imapPort, 0);
 $read = sqimap_mailbox_select($imapConnection, $mailbox);
-if (!empty($passed_ent_id))
+if (!empty($passed_ent_id)){
+      set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $body = sqimap_run_command($imapConnection, "FETCH $passed_id BODY[$passed_ent_id]",true, $response, $readmessage, $uid_support);
-else
+}else{
+    set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
     $body = sqimap_run_command($imapConnection, "FETCH $passed_id RFC822",true, $response, $readmessage, $uid_support);
+}
+    
 $message_body = '';
 $header = false;
 $mimepart = false;

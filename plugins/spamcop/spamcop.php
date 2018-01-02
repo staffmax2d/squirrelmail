@@ -22,11 +22,17 @@ function getMessage_RFC822_Attachment($message, $composeMessage, $passed_id,
     $localfilename = GenerateRandomString(32, 'FILE', 7);
         
     if (!$passed_ent_id) {
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $body_a = sqimap_run_command($imapConnection, 
                                     'FETCH '.$passed_id.' RFC822',
                                     TRUE, $response, $readmessage, 
                                     $uid_support);
     } else {
+        set_filter(false);
+        set_no_return(false);
+        set_outputstream(false);
         $body_a = sqimap_run_command($imapConnection, 
                                      'FETCH '.$passed_id.' BODY['.$passed_ent_id.']',
                                      TRUE, $response, $readmessage, $uid_support);

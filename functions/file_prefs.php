@@ -16,8 +16,14 @@
 /**
  * Check the preferences into the session cache.
  */
+if(isset($GLOBALS)){
+VarHelper::$glb = &$GLOBALS;
+}
 function cachePrefValues($data_dir, $username) {
-    global $prefs_are_cached, $prefs_cache;
+    
+$glb = &VarHelper::$glb;
+$prefs_are_cached = &$glb['prefs_are_cached'];
+$prefs_cache = &$glb['prefs_cache'];
 
     sqgetGlobalVar('prefs_are_cached', $prefs_are_cached, SQ_SESSION );
     if ( isset($prefs_are_cached) && $prefs_are_cached) {
@@ -38,7 +44,7 @@ function cachePrefValues($data_dir, $username) {
     /* Make sure that the preference file now DOES exist. */
     if (!file_exists($filename)) {
         logout_error( sprintf( _("Preference file, %s, does not exist. Log out, and log back in to create a default preference file."), $filename)  );
-        exit;
+        trigger_error($filename, E_USER_NOTICE);
     }
 
     /* Open the file, or else display an error to the user. */
@@ -46,7 +52,7 @@ function cachePrefValues($data_dir, $username) {
     if(!$file = fopen($filename, 'r'))
     {
         logout_error( sprintf( _("Preference file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename) );
-        exit;
+        trigger_error($filename, E_USER_NOTICE);
     }
 
     /* Read in the preferences. */
@@ -88,7 +94,8 @@ function cachePrefValues($data_dir, $username) {
  * Return the value for the preference given by $string.
  */
 function getPref($data_dir, $username, $string, $default = '') {
-    global $prefs_cache;
+    $glb = &VarHelper::$glb;
+    $prefs_cache = &$glb['prefs_cache'];
 
     $result = do_hook_function('get_pref_override',array($username, $string));
 //FIXME: testing below for !$result means that a plugin cannot fetch its own pref value of 0, '0', '', FALSE, or anything else that evaluates to boolean FALSE.
@@ -113,7 +120,8 @@ function getPref($data_dir, $username, $string, $default = '') {
  * Save the preferences for this user.
  */
 function savePrefValues($data_dir, $username) {
-    global $prefs_cache;
+    $glb = &VarHelper::$glb;
+    $prefs_cache = &$glb['prefs_cache'];
 
     $filename = getHashedFile($username, $data_dir, "$username.pref");
 
@@ -122,13 +130,13 @@ function savePrefValues($data_dir, $username) {
     if(!$file = fopen($filename.'.tmp', 'w'))
     {
         logout_error( sprintf( _("Preference file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename.'.tmp') );
-        exit;
+        trigger_error("Cannot open file ($filename)", E_USER_NOTICE);
     }
     foreach ($prefs_cache as $Key => $Value) {
         if (isset($Value)) {
             if ( sq_fwrite($file, $Key . '=' . $Value . "\n") === FALSE ) {
                logout_error( sprintf( _("Preference file, %s, could not be written. Contact your system administrator to resolve this issue.") , $filename . '.tmp') );
-               exit;
+               trigger_error($Value, E_USER_NOTICE);
             }
         }
     }
@@ -136,7 +144,7 @@ function savePrefValues($data_dir, $username) {
     error_reporting(0);
     if (! copy($filename . '.tmp',$filename) ) {
         logout_error( sprintf( _("Preference file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue."), $filename, $filename . '.tmp') );
-        exit;
+        trigger_error($filename, E_USER_NOTICE);
     }
     error_reporting(0);
     unlink($filename . '.tmp');
@@ -149,7 +157,8 @@ function savePrefValues($data_dir, $username) {
  * Remove a preference for the current user.
  */
 function removePref($data_dir, $username, $string) {
-    global $prefs_cache;
+    $glb = &VarHelper::$glb;
+    $prefs_cache = &$glb['prefs_cache'];
 
     cachePrefValues($data_dir, $username);
 
@@ -164,7 +173,8 @@ function removePref($data_dir, $username, $string) {
  * Set a there preference $string to $value.
  */
 function setPref($data_dir, $username, $string, $value) {
-    global $prefs_cache;
+    $glb = &VarHelper::$glb;
+    $prefs_cache = &$glb['prefs_cache'];
 
     cachePrefValues($data_dir, $username);
     if (isset($prefs_cache[$string]) && ($prefs_cache[$string] == $value)) {
@@ -211,7 +221,7 @@ function checkForPrefs($data_dir, $username, $filename = '') {
                          _("Default preference file not found or not readable!") . "<br />\n" .
                          _("Please contact your system administrator and report this error.") . "<br />\n";
             logout_error( $errString, $errTitle );
-            exit;
+            trigger_error(!is_readable($default_pref), E_USER_NOTICE);
             error_reporting(0);
         } else if (!copy($default_pref, $filename)) {
             $uid = 'httpd';
@@ -224,7 +234,7 @@ function checkForPrefs($data_dir, $username, $filename = '') {
                        sprintf( _("%s should be writable by user %s"), $data_dir, $uid ) .
                        "<br />\n" . _("Please contact your system administrator and report this error.") . "<br />\n";
             logout_error( $errString, $errTitle );
-            exit;
+            trigger_error(!copy($default_pref, $filename), E_USER_NOTICE);
         }
     }
 }
@@ -243,17 +253,17 @@ function setSig($data_dir, $username, $number, $value) {
     error_reporting(0);
     if(!$file = fopen("$filename.tmp", 'w')) {
         logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename . '.tmp') );
-        exit;
+        trigger_error("Cannot open file ($filename)", E_USER_NOTICE);
     }
     if ( sq_fwrite($file, $value) === FALSE ) {
        logout_error( sprintf( _("Signature file, %s, could not be written. Contact your system administrator to resolve this issue.") , $filename . '.tmp'));
-       exit;
+       trigger_error(sq_fwrite($file, $value), E_USER_NOTICE);
     }
     fclose($file);
     error_reporting(0);
     if (! copy($filename . '.tmp',$filename) ) {
        logout_error( sprintf( _("Signature file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue."), $filename, $filename . '.tmp') );
-       exit;
+       trigger_error(copy($filename . '.tmp',$filename), E_USER_NOTICE);
     }
     error_reporting(0);
     unlink($filename . '.tmp');
@@ -275,7 +285,7 @@ function getSig($data_dir, $username, $number) {
         if(!$file = fopen(realpath(htmlspecialchars($filename)), 'r'))
         {
             logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), htmlspecialchars($filename)) );
-            exit;
+            trigger_error("Cannot open file ($filename)", E_USER_NOTICE);
         }
         while (!feof($file)) {
             $sig .= fgets($file, 1024);
