@@ -203,7 +203,7 @@ class Deliver_SMTP extends Deliver {
             if ($this->errorCheck($tmp, $stream)) {
                 return(0);
             }
-        } elseif ($smtp_auth_mech == "plain") {
+        } elseif ($smtp_auth_mech == 'plain') {
             /* SASL Plain */
             $auth = base64_encode("$user\0$user\0$pass");
 
@@ -216,14 +216,14 @@ class Deliver_SMTP extends Deliver {
                 $read = fgets($stream, 1024);
             }
 
-            $results=explode(" ",$read,3);
+            $results=explode(' ',$read,3);
             $response=$results[1];
             $message=$results[2];
         } else {
             /* Right here, they've reached an unsupported auth mechanism.
             This is the ugliest hack I've ever done, but it'll do till I can fix
             things up better tomorrow.  So tired... */
-            if ($this->errorCheck("535 Unable to use this auth type",$stream)) {
+            if ($this->errorCheck('535 Unable to use this auth type',$stream)) {
                 return(0);
             }
         }
@@ -311,27 +311,27 @@ class Deliver_SMTP extends Deliver {
         }
 
         switch ($err_num) {
-        case '421': $message = _("Service not available, closing channel");
+        case '421': $message = _('Service not available, closing channel');
             break;
-        case '432': $message = _("A password transition is needed");
+        case '432': $message = _('A password transition is needed');
             break;
-        case '450': $message = _("Requested mail action not taken: mailbox unavailable");
+        case '450': $message = _('Requested mail action not taken: mailbox unavailable');
             break;
-        case '451': $message = _("Requested action aborted: error in processing");
+        case '451': $message = _('Requested action aborted: error in processing');
             break;
-        case '452': $message = _("Requested action not taken: insufficient system storage");
+        case '452': $message = _('Requested action not taken: insufficient system storage');
             break;
-        case '454': $message = _("Temporary authentication failure");
+        case '454': $message = _('Temporary authentication failure');
             break;
-        case '500': $message = _("Syntax error; command not recognized");
+        case '500': $message = _('Syntax error; command not recognized');
             break;
-        case '501': $message = _("Syntax error in parameters or arguments");
+        case '501': $message = _('Syntax error in parameters or arguments');
             break;
-        case '502': $message = _("Command not implemented");
+        case '502': $message = _('Command not implemented');
             break;
-        case '503': $message = _("Bad sequence of commands");
+        case '503': $message = _('Bad sequence of commands');
             break;
-        case '504': $message = _("Command parameter not implemented");
+        case '504': $message = _('Command parameter not implemented');
             break;
         default:    $message=selezione1($err_num);
             break;
@@ -379,25 +379,25 @@ class Deliver_SMTP extends Deliver {
 
 function selezione1($k){
     switch ($k){
-        case '530': $message = _("Authentication required");
+        case '530': $message = _('Authentication required');
             break;
-        case '534': $message = _("Authentication mechanism is too weak");
+        case '534': $message = _('Authentication mechanism is too weak');
             break;
-        case '535': $message = _("Authentication failed");
+        case '535': $message = _('Authentication failed');
             break;
-        case '538': $message = _("Encryption required for requested authentication mechanism");
+        case '538': $message = _('Encryption required for requested authentication mechanism');
             break;
-        case '550': $message = _("Requested action not taken: mailbox unavailable");
+        case '550': $message = _('Requested action not taken: mailbox unavailable');
             break;
-        case '551': $message = _("User not local; please try forwarding");
+        case '551': $message = _('User not local; please try forwarding');
             break;
-        case '552': $message = _("Requested mail action aborted: exceeding storage allocation");
+        case '552': $message = _('Requested mail action aborted: exceeding storage allocation');
             break;
-        case '553': $message = _("Requested action not taken: mailbox name not allowed");
+        case '553': $message = _('Requested action not taken: mailbox name not allowed');
             break;
-        case '554': $message = _("Transaction failed");
+        case '554': $message = _('Transaction failed');
             break;
-        default:    $message = _("Unknown response");
+        default:    $message = _('Unknown response');
             break;
     }
     return $message;

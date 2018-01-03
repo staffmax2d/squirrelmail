@@ -1,5 +1,6 @@
 <?php
 
+(require_once SM_PATH . 'class/MyException.php');
 /**
  * abook_ldap_server.php
  *
@@ -146,13 +147,11 @@ class abook_ldap_server extends addressbook_backend {
             }
 
             $rst=$this->open(true);
-            if($rst==true){
-                return true;
-            }else{
-                return $rst;
+            if($rst!== true){
+                throw new FileException('Unable to open file');
             }
         } else {
-            $this->set_error('Invalid argument to constructor');
+            throw new InvalidArgException('Invalid argument to constructor');
         }
     }
 
@@ -258,7 +257,7 @@ $default_charset = &$glb['default_charset'];
      * @return string sanitized string
      */
     function ldapspecialchars($string) {
-        $sanitized=array('\\' => '\5c',
+        $sanitized=array("\\" => '\5c',
                          '*' => '\2a',
                          '(' => '\28',
                          ')' => '\29',

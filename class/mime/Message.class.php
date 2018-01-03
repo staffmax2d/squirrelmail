@@ -642,7 +642,7 @@ class Message {
         if (count($arg_a) > 9) {
             $d = strtr($arg_a[0], array('  ' => ' '));
             $d_parts = explode(' ', $d);
-            if (!$arg_a[1]) $arg_a[1] = _("(no subject)");
+            if (!$arg_a[1]) $arg_a[1] = _('(no subject)');
 
             $hdr->date = getTimeStamp($d_parts); /* argument 1: date */
             $hdr->date_unparsed = strtr($d,'<>','  '); /* original date */
@@ -708,11 +708,11 @@ class Message {
         while (true) {
             $iPos = strpos($read,'"',$iPos);
             
-            if (!$iPos||($iPos && $read{$iPos -1}) != '\\') {
+            if (!$iPos||($iPos && $read{$iPos -1}) != "\\") {
                 $s = substr($read,$i,($iPos-$i));
                 $i = $iPos;
                 goto f;
-            } else if ($iPos > 1 && $read{$iPos -1} == '\\' && $read{$iPos-2} == '\\') {
+            } else if ($iPos > 1 && $read{$iPos -1} == "\\" && $read{$iPos-2} == "\\") {
                 // This is an unique situation where the fast detection of the string
                 // fails. If the quote string ends with \\ then we need to iterate
                 // through the entire string to make sure we detect the unexcaped
@@ -724,7 +724,7 @@ class Message {
                  for ($j=$iPosStart,$iCnt=strlen($read);$j<$iCnt;++$j) {
                     $cChar = $read{$j};
                     switch ($cChar) {
-                        case '\\':
+                        case "\\":
                            $bEscaped = !$bEscaped;
                             $s .= $cChar;
                             break;
@@ -892,13 +892,13 @@ class Message {
                 $bnd = $reg[1];
                 $bndreg = $bnd;
                 $bndreg = str_replace("\\", "\\\\", $bndreg);
-                $bndreg = str_replace("?", "\\?", $bndreg);
-                $bndreg = str_replace("+", "\\+", $bndreg);
-                $bndreg = str_replace(".", "\\.", $bndreg);
-                $bndreg = str_replace("/", "\\/", $bndreg);
-                $bndreg = str_replace("-", "\\-", $bndreg);
-                $bndreg = str_replace("(", "\\(", $bndreg);
-                $bndreg = str_replace(")", "\\)", $bndreg);
+                $bndreg = str_replace('?', '\\?', $bndreg);
+                $bndreg = str_replace('+', '\\+', $bndreg);
+                $bndreg = str_replace('.', '\\.', $bndreg);
+                $bndreg = str_replace('/', '\\/', $bndreg);
+                $bndreg = str_replace('-', '\\-', $bndreg);
+                $bndreg = str_replace('(', '\\(', $bndreg);
+                $bndreg = str_replace(')', '\\)', $bndreg);
             } else if ($rfc822_header && $line == '') {
                 $rfc822_header = false;
                 if ($msg->type0 == 'multipart') {
@@ -911,7 +911,7 @@ class Message {
                 $bnd = $boundaries[$cnt]['bnd'];
                 $bndreg = $boundaries[$cnt]['bndreg'];
 
-                $regstr = '/^--'."($bndreg)".".*".'/';
+                $regstr = '/^--'."($bndreg)".'.*'.'/';
                 if (preg_match($regstr, $line, $reg)) {
                     $bndlen = strlen($reg[1]);
                     $bndend = false;

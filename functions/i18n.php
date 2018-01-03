@@ -301,7 +301,7 @@ function fixcharset($charset) {
      * name in order to be able to use it in function names and include calls.
      * Also make sure it's in lower case (ala "UTF" --> "utf")
      */
-    $charset=preg_replace("/[-:.\/\\\]/",'_', strtolower($charset));
+    $charset=preg_replace('/[-:.\/\\\]/','_', strtolower($charset));
 
     // OE ks_c_5601_1987 > cp949
     $charset=str_replace('ks_c_5601_1987','cp949',$charset);
@@ -411,7 +411,7 @@ $sm_notAlias = &$glb['sm_notAlias'];
     // System reverts to English translation if user prefs contain translation
     // that is not available in $languages array
     if (!isset($languages[$sm_notAlias])) {
-        $sm_notAlias="en_US";
+        $sm_notAlias='en_US';
     }
 
     while (isset($languages[$sm_notAlias]['ALIAS'])) {
@@ -426,9 +426,9 @@ $sm_notAlias = &$glb['sm_notAlias'];
         textdomain();
         if (function_exists('bind_textdomain_codeset')) {
             if ($sm_notAlias == 'ja_JP') {
-                bind_textdomain_codeset ("squirrelmail", 'EUC-JP');
+                bind_textdomain_codeset ('squirrelmail', 'EUC-JP');
             } else {
-                bind_textdomain_codeset ("squirrelmail", $languages[$sm_notAlias]['CHARSET'] );
+                bind_textdomain_codeset ('squirrelmail', $languages[$sm_notAlias]['CHARSET'] );
             }
         }
 
@@ -457,8 +457,8 @@ $sm_notAlias = &$glb['sm_notAlias'];
             putenv( "LC_ALL=$longlocale" );
             putenv( "LANG=$longlocale" );
             putenv( "LANGUAGE=$longlocale" );
-            putenv( "LC_NUMERIC=C" );
-            if ($sm_notAlias=='tr_TR') putenv( "LC_CTYPE=C" );
+            putenv( 'LC_NUMERIC=C' );
+            if ($sm_notAlias=='tr_TR') putenv( 'LC_CTYPE=C' );
         }
         // Workaround for plugins that use numbers with floating point
         // It might be removed if plugins use correct decimal delimiters
@@ -480,7 +480,7 @@ $sm_notAlias = &$glb['sm_notAlias'];
                 // until admin can get their act together
                 if (sqGetGlobalVar('user_is_logged_in', $user_is_logged_in, SQ_SESSION)
                  && $user_is_logged_in && PAGE_NAME != 'webmail') {
-                    echo _("You need to have PHP installed with the multibyte string function enabled (using configure option --enable-mbstring).");
+                    echo _('You need to have PHP installed with the multibyte string function enabled (using configure option --enable-mbstring).');
                     // Revert to English link has to be added.
                     // stop further execution in order not to get php errors on mb_internal_encoding().
                 }
@@ -556,7 +556,7 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
     }
     // Catch removed translation
     if (!isset($languages[$my_language])) {
-        $my_language="en_US";
+        $my_language='en_US';
     }
     while (isset($languages[$my_language]['ALIAS'])) {
         $my_language = $languages[$my_language]['ALIAS'];
@@ -594,67 +594,67 @@ $lossy_encoding = &$glb['lossy_encoding'];
     $input_charset = strtolower($input_charset);
 
     // Is user's locale Unicode based ?
-    if ( $default_charset == "utf-8" ) {
+    if ( $default_charset == 'utf-8' ) {
         return true;
     }
 
     // Charsets that are similar
     switch ($default_charset) {
-    case "windows-1251":
-        if ( $input_charset == "iso-8859-5" ||
-                $input_charset == "koi8-r" ||
-                $input_charset == "koi8-u" ) {
+    case 'windows-1251':
+        if ( $input_charset == 'iso-8859-5' ||
+                $input_charset == 'koi8-r' ||
+                $input_charset == 'koi8-u' ) {
             return true;
         } else {
             return false;
         }
         break;
-    case "windows-1257":
-        if ( $input_charset == "iso-8859-13" ||
-             $input_charset == "iso-8859-4" ) {
+    case 'windows-1257':
+        if ( $input_charset == 'iso-8859-13' ||
+             $input_charset == 'iso-8859-4' ) {
             return true;
         } else {
             return false;
         }
         break;
-    case "iso-8859-4":
-        if ( $input_charset == "iso-8859-13" ||
-             $input_charset == "windows-1257" ) {
+    case 'iso-8859-4':
+        if ( $input_charset == 'iso-8859-13' ||
+             $input_charset == 'windows-1257' ) {
             return true;
         } else {
             return false;
         }
         break;
-    case "iso-8859-5":
-        if ( $input_charset == "windows-1251" ||
-             $input_charset == "koi8-r" ||
-             $input_charset == "koi8-u" ) {
+    case 'iso-8859-5':
+        if ( $input_charset == 'windows-1251' ||
+             $input_charset == 'koi8-r' ||
+             $input_charset == 'koi8-u' ) {
             return true;
         } else {
             return false;
         }
         break;
-    case "iso-8859-13":
-        if ( $input_charset == "iso-8859-4" ||
-             $input_charset == "windows-1257" ) {
+    case 'iso-8859-13':
+        if ( $input_charset == 'iso-8859-4' ||
+             $input_charset == 'windows-1257' ) {
             return true;
         } else {
             return false;
         }
         break;
-    case "koi8-r":
-        if ( $input_charset == "windows-1251" ||
-             $input_charset == "iso-8859-5" ||
-             $input_charset == "koi8-u" ) {
+    case 'koi8-r':
+        if ( $input_charset == 'windows-1251' ||
+             $input_charset == 'iso-8859-5' ||
+             $input_charset == 'koi8-u' ) {
             return true;
         } else {
             return false;
         }
         break;
-    case "koi8-u":
-        if ( $input_charset == "windows-1251" ||
-             $input_charset == "iso-8859-5" ||
-             $input_charset == "koi8-r" ) {
+    case 'koi8-u':
+        if ( $input_charset == 'windows-1251' ||
+             $input_charset == 'iso-8859-5' ||
+             $input_charset == 'koi8-r' ) {
             return true;
         } else {
             return false;
@@ -681,7 +681,7 @@ function japanese_charset_xtra() {
                 $detect_encoding == 'SJIS' ||
                 $detect_encoding == 'UTF-8') {
 
-                $ret = mb_convert_kana(mb_convert_encoding($ret, 'EUC-JP', 'AUTO'), "KV");
+                $ret = mb_convert_kana(mb_convert_encoding($ret, 'EUC-JP', 'AUTO'), 'KV');
             }
             break;
         case 'encode':
@@ -692,7 +692,7 @@ function japanese_charset_xtra() {
                 $detect_encoding == 'SJIS' ||
                 $detect_encoding == 'UTF-8') {
 
-                $ret = mb_convert_encoding(mb_convert_kana($ret, "KV"), 'JIS', 'AUTO');
+                $ret = mb_convert_encoding(mb_convert_kana($ret, 'KV'), 'JIS', 'AUTO');
             }
             break;
         case 'strimwidth':
@@ -730,7 +730,7 @@ function japanese_charset_xtra() {
              */
             break;
         case 'decodeheader':
-            $ret = str_replace("\t", "", $ret);
+            $ret = str_replace('\t', '', $ret);
             if (preg_match('/=\?([^?]+)\?(q|b)\?([^?]+)\?=/i', $ret))
                 error_reporting(0);
                 $ret = mb_decode_mimeheader($ret);
@@ -766,7 +766,7 @@ function japanese_charset_xtra() {
                 strpos($ret, 'https://') === FALSE &&
                 strpos($ret, 'ftp://') === FALSE) {
 
-                $ret = mb_convert_kana($ret, "KV");
+                $ret = mb_convert_kana($ret, 'KV');
 
                 $line_new = '';
                 $ptr = 0;

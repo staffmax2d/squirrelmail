@@ -92,7 +92,7 @@ $imap_server_type = &$glb['imap_server_type'];
     foreach ($multi_search as $string) {
        $search_string .= $search_where
                       . ' "'
-                      . str_replace(array('\\', '"'), array('\\\\', '\\"'), $string)
+                      . str_replace(array("\\", '"'), array("\\\\", "\\"), $string)
                       . '" ';
     }
 
@@ -101,7 +101,7 @@ $imap_server_type = &$glb['imap_server_type'];
     /* now use $search_string in the imap search */
     if ($allow_charset_search && isset($languages[$squirrelmail_language]['CHARSET']) &&
         $languages[$squirrelmail_language]['CHARSET']) {
-        $ss = "SEARCH CHARSET "
+        $ss = 'SEARCH CHARSET '
             . strtoupper($languages[$squirrelmail_language]['CHARSET'])
             . " ALL $search_string";
     } else {
@@ -135,7 +135,7 @@ $imap_server_type = &$glb['imap_server_type'];
     foreach ($readin as $readin_part) {
         /* Check to see if a SEARCH response was received */
         if (substr($readin_part, 0, 9) == '* SEARCH ') {
-            $messagelist = preg_split("/ /", substr($readin_part, 9));
+            $messagelist = preg_split('/ /', substr($readin_part, 9));
         } else if (isset($errors)) {
             $errors = $errors.$readin_part;
         } else {

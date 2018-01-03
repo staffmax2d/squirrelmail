@@ -95,7 +95,7 @@ class Deliver_SendMail extends Deliver {
         // save executed command for future reference
         $this->sendmail_command = "$sendmail_path $this->sendmail_args -f$envelopefrom";
         // open process handle for writing
-        $stream = popen(escapeshellcmd($this->sendmail_command), "w");
+        $stream = popen(escapeshellcmd($this->sendmail_command), 'w');
         return $stream;
     }
 
@@ -114,7 +114,7 @@ class Deliver_SendMail extends Deliver {
         // check pclose() status.
         if ($status!=0) {
             $ret = false;
-            $this->dlv_msg=_("Email delivery error");
+            $this->dlv_msg=_('Email delivery error');
             $this->dlv_ret_nr=$status;
             // we can get better error messsage only if we switch to php 4.3+ and proc_open().
             $this->dlv_server_msg=sprintf(_("Can't execute command '%s'."),$this->sendmail_command);

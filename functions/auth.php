@@ -125,11 +125,11 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
         (include_once SM_PATH . 'functions/display_messages.php' );
         set_up_language($squirrelmail_language, true);
         if (!$message)
-            logout_error( _("You must be logged in to access this page.") );
+            logout_error( _('You must be logged in to access this page.') );
         else if ($message == 1)
-            logout_error( _("Your session has expired, but will be resumed after logging in again.") );
+            logout_error( _('Your session has expired, but will be resumed after logging in again.') );
         else if ($message == 2)
-            logout_error( _("The current page request appears to have originated from an unrecognized source.") );
+            logout_error( _('The current page request appears to have originated from an unrecognized source.') );
         trigger_error('Logout error',E_USER_NOTICE);
     }
 }
@@ -147,7 +147,7 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
 function cram_md5_response ($username,$password,$challenge) {
     $challenge=base64_decode($challenge);
     $hash=bin2hex(hmac_md5($challenge,$password));
-    $response=base64_encode($username . " " . $hash) . "\r\n";
+    $response=base64_encode($username . ' ' . $hash) . "\r\n";
     return $response;
 }
 
@@ -177,22 +177,22 @@ function digest_md5_response ($username,$password,$challenge,$service,$host) {
     // return false;
     //}
     $cnonce = base64_encode(bin2hex(hmac_md5(microtime())));
-    $ncount = "00000001";
+    $ncount = '00000001';
 
     /* This can be auth (authentication only), auth-int (integrity protection), or
        auth-conf (confidentiality protection).  Right now only auth is supported.
        DO NOT CHANGE THIS VALUE */
-    $qop_value = "auth";
+    $qop_value = 'auth';
 
     $digest_uri_value = $service . '/' . $host;
 
     // build the $response_value
     //FIXME This will probably break badly if a server sends more than one realm
-    $string_a1 = utf8_encode($username).":";
-    $string_a1 .= utf8_encode($result['realm']).":";
+    $string_a1 = utf8_encode($username).':';
+    $string_a1 .= utf8_encode($result['realm']).':';
     $string_a1 .= utf8_encode($password);
     $string_a1 = hmac_md5($string_a1);
-    $A1 = $string_a1 . ":" . $result['nonce'] . ":" . $cnonce;
+    $A1 = $string_a1 . ':' . $result['nonce'] . ':' . $cnonce;
     $A1 = bin2hex(hmac_md5($A1));
     $A2 = "AUTHENTICATE:$digest_uri_value";
     // If qop is auth-int or auth-conf, A2 gets a little extra
@@ -202,9 +202,9 @@ function digest_md5_response ($username,$password,$challenge,$service,$host) {
     $A2 = bin2hex(hmac_md5($A2));
 
     $string_response = $result['nonce'] . ':' . $ncount . ':' . $cnonce . ':' . $qop_value;
-    $response_value = bin2hex(hmac_md5($A1.":".$string_response.":".$A2));
+    $response_value = bin2hex(hmac_md5($A1.':'.$string_response.':'.$A2));
 
-    $reply = 'charset=utf-8,username="' . $username . '",realm="' . $result["realm"] . '",';
+    $reply = 'charset=utf-8,username="' . $username . '",realm="' . $result['realm'] . '",';
     $reply .= 'nonce="' . $result['nonce'] . '",nc=' . $ncount . ',cnonce="' . $cnonce . '",';
     $reply .= "digest-uri=\"$digest_uri_value\",response=$response_value";
     $reply .= ',qop=' . $qop_value;
@@ -282,12 +282,12 @@ function hmac_md5($data, $key='') {
     }
     $key = str_pad($key,64,chr(0x00));
     if (strlen($key) > 64) {
-        $key = pack("H*",password_hash($data, PASSWORD_BCRYPT, array('cost' => 13)));
+        $key = pack('H*',password_hash($data, PASSWORD_BCRYPT, array('cost' => 13)));
     }
     $k_ipad =  $key ^ str_repeat(chr(0x36), 64) ;
     $k_opad =  $key ^ str_repeat(chr(0x5c), 64) ;
     /* Heh, let's get recursive. */
-    $hmac=hmac_md5($k_opad . pack("H*",password_hash($k_ipad . $data, PASSWORD_BCRYPT, array('cost' => 13))));
+    $hmac=hmac_md5($k_opad . pack('H*',password_hash($k_ipad . $data, PASSWORD_BCRYPT, array('cost' => 13))));
     return $hmac;
 }
 

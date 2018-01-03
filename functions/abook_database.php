@@ -15,10 +15,10 @@
 if (!(include_once 'DB.php')) {
     // same error also in db_prefs.php
     (require_once SM_PATH . 'functions/display_messages.php');
-    $error  = _("Could not include PEAR database functions required for the database backend.") . "<br />\n";
-    $error .= sprintf(_("Is PEAR installed, and is the include path set correctly to find %s?"),
+    $error  = _('Could not include PEAR database functions required for the database backend.') . "<br />\n";
+    $error .= sprintf(_('Is PEAR installed, and is the include path set correctly to find %s?'),
                         '<tt>DB.php</tt>') . "<br />\n";
-    $error .= _("Please contact your system administrator and report this error.");
+    $error .= _('Please contact your system administrator and report this error.');
     error_box($error, $color);
     trigger_error($error,E_USER_ERROR);
 }
@@ -103,13 +103,13 @@ class abook_database extends addressbook_backend {
      * @param array $param address book backend options
      */
     function abook_database($param) {
-        $this->sname = _("Personal address book");
+        $this->sname = _('Personal address book');
         try{
         if (is_array($param)) {
             if (empty($param['dsn']) ||
                 empty($param['table']) ||
                 empty($param['owner'])) {
-                throw new NullParException("Parameter cannot be null");
+                throw new NullParException('Parameter cannot be null');
             }
 
             $this->dsn   = $param['dsn'];
@@ -136,11 +136,11 @@ class abook_database extends addressbook_backend {
         }
     
         catch (InvalidArgException $e) {
-            echo "Exception ".": ".$e->getMessage();
+            echo 'Exception '.': '.$e->getMessage();
         }
         
         catch (NullParException $e) {
-            echo "Exception ".": ".$e->getMessage();
+            echo 'Exception '.': '.$e->getMessage();
         }
         
     }
@@ -168,7 +168,7 @@ class abook_database extends addressbook_backend {
         $dbh = DB::connect($this->dsn, true);
 
         if (DB::isError($dbh)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
+            return $this->set_error(sprintf(_('Database error: %s'),
                                             DB::errorMessage($dbh)));
         }
 
@@ -256,7 +256,7 @@ class abook_database extends addressbook_backend {
         $expr = "%$expr%";
 
         /* create escape expression */
-        $escape = 'ESCAPE \'' . $this->dbh->quoteString('\\') . '\'';
+        $escape = "ESCAPE \'" . $this->dbh->quoteString("\\") . "\'";
 
         $query = sprintf("SELECT * FROM %s WHERE owner='%s' AND " .
                          "(LOWER(firstname) LIKE '%s' %s OR LOWER(lastname) LIKE '%s' %s)",
@@ -264,7 +264,7 @@ class abook_database extends addressbook_backend {
         $res = $this->dbh->query($query);
 
         if (DB::isError($res)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
+            return $this->set_error(sprintf(_('Database error: %s'),
                                             DB::errorMessage($res)));
         }
 
@@ -315,7 +315,7 @@ class abook_database extends addressbook_backend {
         $res = $this->dbh->query($query);
 
         if (DB::isError($res)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
+            return $this->set_error(sprintf(_('Database error: %s'),
                                             DB::errorMessage($res)));
         }
 
@@ -353,7 +353,7 @@ class abook_database extends addressbook_backend {
         $res = $this->dbh->query($query);
 
         if (DB::isError($res)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
+            return $this->set_error(sprintf(_('Database error: %s'),
                                             DB::errorMessage($res)));
         }
 
@@ -377,7 +377,7 @@ class abook_database extends addressbook_backend {
      */
     function add($userdata) {
         if (!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
 
         if (!$this->open()) {
@@ -391,7 +391,7 @@ class abook_database extends addressbook_backend {
         }
 
         /* Create query */
-        $query = sprintf("INSERT INTO %s (owner, nickname, firstname, " .
+        $query = sprintf('INSERT INTO %s (owner, nickname, firstname, ' .
                          "lastname, email, label) VALUES('%s','%s','%s'," .
                          "'%s','%s','%s')",
                          $this->table, $this->owner,
@@ -406,7 +406,7 @@ class abook_database extends addressbook_backend {
 
          /* Check for errors */
          if (DB::isError($r)) {
-             return $this->set_error(sprintf(_("Database error: %s"),
+             return $this->set_error(sprintf(_('Database error: %s'),
                                              DB::errorMessage($r)));
          }
 
@@ -420,7 +420,7 @@ class abook_database extends addressbook_backend {
      */
     function remove($alias) {
         if (!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
 
         if (!$this->open()) {
@@ -444,7 +444,7 @@ class abook_database extends addressbook_backend {
 
         /* Check for errors */
         if (DB::isError($r)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
+            return $this->set_error(sprintf(_('Database error: %s'),
                                             DB::errorMessage($r)));
         }
         return true;
@@ -458,7 +458,7 @@ class abook_database extends addressbook_backend {
      */
     function modify($alias, $userdata) {
         if (!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
 
         if (!$this->open()) {
@@ -499,7 +499,7 @@ class abook_database extends addressbook_backend {
 
         /* Check for errors */
         if (DB::isError($r)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
+            return $this->set_error(sprintf(_('Database error: %s'),
                                             DB::errorMessage($r)));
         }
         return true;

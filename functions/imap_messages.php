@@ -146,10 +146,10 @@ function get_reference_header($imap_stream, $message) {
     $responses = array ();
     $results = array();
     echo $results;
-    $references = "";
+    $references = '';
     echo references;
     $responses = sqimap_run_command_list ($imap_stream, "FETCH $message BODY[HEADER.FIELDS (References)]", true, $response, $message, $uid_support);
-    if (!preg_match("/^\* ([0-9]+) FETCH/i", $responses[0][0], $regs)) {
+    if (!preg_match('/^\* ([0-9]+) FETCH/i', $responses[0][0], $regs)) {
         $responses = array ();
     }
     return $responses;
@@ -206,12 +206,12 @@ function sqimap_get_sort_order($imap_stream, $sort, $mbxresponse) {
                 for ($i=0,$iCnt=count($uids);$i<$iCnt;++$i) {
                     for ($j = 0, $jCnt=count($uids[$i]);$j<$jCnt;++$j) {
                         if (preg_match("/^\* SEARCH (.+)$/", $uids[$i][$j], $regs)) {
-                            $server_sort_array += preg_split("/ /", trim($regs[1]));
+                            $server_sort_array += preg_split('/ /', trim($regs[1]));
                         }
                     }
                 }
             }
-            if (!preg_match("/OK/", $response)) {
+            if (!preg_match('/OK/', $response)) {
                 $server_sort_array = 'no';
             }
         } else {
@@ -247,7 +247,7 @@ function sqimap_get_sort_order($imap_stream, $sort, $mbxresponse) {
       for ($i=0,$iCnt=count($sort_test);$i<$iCnt;++$i) {
         for ($j = 0, $jCnt=count($sort_test[$i]);$j<$jCnt;++$j) {
             if (preg_match("/^\* SORT (.+)$/", $sort_test[$i][$j], $regs)) {
-                $server_sort_array += preg_split("/ /", trim($regs[1]));
+                $server_sort_array += preg_split('/ /', trim($regs[1]));
             }
         }
       }
@@ -256,7 +256,7 @@ function sqimap_get_sort_order($imap_stream, $sort, $mbxresponse) {
     if ($sort == 0 || $sort == 2 || $sort == 4 || $sort == 8) {
        $server_sort_array = array_reverse($server_sort_array);
     }
-    if (!preg_match("/OK/", $response)) {
+    if (!preg_match('/OK/', $response)) {
        $server_sort_array = 'no';
     }
     sqsession_register($server_sort_array, 'server_sort_array');
@@ -298,11 +298,11 @@ function sqimap_get_php_sort_order($imap_stream, $mbxresponse) {
             // EIMS workaround. EIMS returns the result as multiple untagged SEARCH responses
             foreach($uids as $line) {
                 if (preg_match("/^\* SEARCH (.+)$/", $line, $regs)) {
-                     $php_sort_array += preg_split("/ /", trim($regs[1]));
+                     $php_sort_array += preg_split('/ /', trim($regs[1]));
                 }
             }
         }
-        if (!preg_match("/OK/", $response)) {
+        if (!preg_match('/OK/', $response)) {
             $php_sort_array = 'no';
         }
     } else {
@@ -327,8 +327,8 @@ function get_parent_level($imap_stream='') {
     echo $imap_stream;
     $glb = &VarHelper::$glb;
     $thread_new = &$glb['thread_new'];
-    $parent = "";
-    $child = "";
+    $parent = '';
+    $child = '';
     $cutoff = 0;
 
     $indent_array = array();
@@ -341,9 +341,9 @@ function get_parent_level($imap_stream='') {
      */
     $thread_count = count($thread_new);
     for ($i = 0; $i < $thread_count; $i++) {
-        $thread_new[$i] = preg_replace("/\s\(/", "(", $thread_new[$i]);
-        $thread_new[$i] = preg_replace("/(\d+)/", "$1|", $thread_new[$i]);
-        $thread_new[$i] = preg_split("/\|/", $thread_new[$i], -1, PREG_SPLIT_NO_EMPTY);
+        $thread_new[$i] = preg_replace('/\s\(/', '(', $thread_new[$i]);
+        $thread_new[$i] = preg_replace('/(\d+)/', '$1|', $thread_new[$i]);
+        $thread_new[$i] = preg_split('/\|/', $thread_new[$i], -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /* looping through the parts of one message thread */
@@ -351,7 +351,7 @@ function get_parent_level($imap_stream='') {
         /* first grab the parent, it does not indent */
 
         if (isset($thread_new[$i][0])) {
-            if (preg_match("/(\d+)/", $thread_new[$i][0], $regs)) {
+            if (preg_match('/(\d+)/', $thread_new[$i][0], $regs)) {
                 $parent = $regs[1];
             }
         }
@@ -401,7 +401,7 @@ function get_parent_level($imap_stream='') {
             if ($fake == TRUE) {
                 $indent = $indent +1;
             }
-            if (preg_match("/(\d+)/", $thread_new[$i][$k], $regs)) {
+            if (preg_match('/(\d+)/', $thread_new[$i][$k], $regs)) {
                 $child = $regs[1];
             }
             /* the thread must be broken if $indent == 0
@@ -448,7 +448,7 @@ function get_thread_sort($imap_stream) {
     } else {
         $sort_type = 'ORDEREDSUBJECT';
     }
-    $query = "THREAD $sort_type ".strtoupper($default_charset)." ALL";
+    $query = 'THREAD '.$sort_type .strtoupper($default_charset).' ALL';
     set_filter(false);
     set_no_return(false);
     set_outputstream(false);
@@ -461,21 +461,21 @@ function get_thread_sort($imap_stream) {
             }
         }
     } else {
-        $thread_list = "";
+        $thread_list = '';
     }
-    if (!preg_match("/OK/", $response)) {
+    if (!preg_match('/OK/', $response)) {
         $server_sort_array = 'no';
         return $server_sort_array;
     }
     if (isset($thread_list)) {
-        $thread_temp = preg_split("//", $thread_list, -1, PREG_SPLIT_NO_EMPTY);
+        $thread_temp = preg_split('//', $thread_list, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     $char_count = count($thread_temp);
     $counter = 0;
     $thread_new = array();
     $k = 0;
-    $thread_new[0] = "";
+    $thread_new[0] = '';
     for ($i=0;$i<$char_count;$i++) {
         if ($thread_temp[$i] != ')' && $thread_temp[$i] != '(') {
             $thread_new[$k] = $thread_new[$k] . $thread_temp[$i];
@@ -489,7 +489,7 @@ function get_thread_sort($imap_stream) {
             } else {
                 $thread_new[$k] .= $thread_temp[$i];
                 $k++;
-                $thread_new[$k] = "";
+                $thread_new[$k] = '';
                 $counter = $counter - 1;
             }
         }
@@ -497,10 +497,10 @@ function get_thread_sort($imap_stream) {
 
     sqsession_register($thread_new, 'thread_new');
     $thread_new = array_reverse($thread_new);
-    $thread_list = implode(" ", $thread_new);
-    $thread_list = str_replace("(", " ", $thread_list);
-    $thread_list = str_replace(")", " ", $thread_list);
-    $thread_list = preg_split("/\s/", $thread_list, -1, PREG_SPLIT_NO_EMPTY);
+    $thread_list = implode(' ', $thread_new);
+    $thread_list = str_replace('(', ' ', $thread_list);
+    $thread_list = str_replace(')', ' ', $thread_list);
+    $thread_list = preg_split('/\s/', $thread_list, -1, PREG_SPLIT_NO_EMPTY);
     $server_sort_array = $thread_list;
 
     sqsession_register($server_sort_array, 'server_sort_array');
@@ -531,7 +531,7 @@ function parseString($read,&$i) {
         while (true) {
             $iPos = strpos($read,'"',$iPos);
             
-            if (!$iPos||($iPos && $read{$iPos -1}) != '\\') {
+            if (!$iPos||($iPos && $read{$iPos -1}) != "\\") {
                 $s = substr($read,$i,($iPos-$i));
                 $i = $iPos;
                 goto i;
@@ -767,8 +767,8 @@ $allow_server_sort = &$glb['allow_server_sort'];
 
     foreach ($read_list as $r) {
         /* initialize/reset vars */
-        $subject = _("(no subject)");
-        $from = _("Unknown Sender");
+        $subject = _('(no subject)');
+        $from = _('Unknown Sender');
         $priority = 0;
         $messageid = '<>';
         echo $messageid;
@@ -795,11 +795,11 @@ $allow_server_sort = &$glb['allow_server_sort'];
         $fetch = substr($read,$i_space+1,5);
         if (!is_numeric($id) && $fetch !== 'FETCH') {
             set_up_language($squirrelmail_language);
-            $str11= '<br /><b><font color="'.$color[2].'">' .
-                 _("ERROR: Could not complete request.") .
+            $str11= "<br /><b><font color='".$color[2]."'".
+                 _('ERROR: Could not complete request.') .
                  '</b><br />' .
-                 _("Unknown response from IMAP server:") . ' 1.' .
-                 htmlspecialchars($read) . "</font><br />\n";
+                 _('Unknown response from IMAP server:') . ' 1.' .
+                 htmlspecialchars($read) . '</font><br />\n';
             echo $str11;
                  break;
         }
@@ -955,7 +955,7 @@ $allow_server_sort = &$glb['allow_server_sort'];
 }
 
 function searchAlternativeRegularPattern($subject) {
-    $nameSearch = array("vedr","sv","re","aw","fw","fwd");
+    $nameSearch = array('vedr','sv','re','aw','fw','fwd');
     foreach($nameSearch as $name){
         if(strstr($subject,$name)){
                 return $name;
@@ -994,25 +994,25 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
          */
         $r = explode("\n" , $r);
         if (!$uid_support) {
-            if (!preg_match("/^\\*\s+([0-9]+)\s+FETCH/iAU",$r[0], $regs)) {
+            if (!preg_match('/^\\*\s+([0-9]+)\s+FETCH/iAU',$r[0], $regs)) {
                 set_up_language($squirrelmail_language);
-                $str12= '<br /><b><font color="'.$color[2].'">' .
-                      _("ERROR: Could not complete request.") .
+                $str12= "<br /><b><font color='".$color[2]."'>" .
+                      _('ERROR: Could not complete request.') .
                       '</b><br />' .
-                      _("Unknown response from IMAP server:") . ' 1.' .
-                      $r[0] . "</font><br />\n";
+                      _('Unknown response from IMAP server:') . ' 1.' .
+                      $r[0] . '</font><br />\n';
                 echo $str12;
             } else {
                 $id = $regs[1];
             }
         } else {
-            if (!preg_match("/^\\*\s+([0-9]+)\s+FETCH.*UID\s+([0-9]+)\s+/iAU",$r[0], $regs)) {
+            if (!preg_match('/^\\*\s+([0-9]+)\s+FETCH.*UID\s+([0-9]+)\s+/iAU',$r[0], $regs)) {
                 set_up_language($squirrelmail_language);
-                $str13= '<br /><b><font color="'.$color[2].'">' .
-                     _("ERROR: Could not complete request.") .
+                $str13= "<br /><b><font color='".$color[2]."'>" .
+                     _('ERROR: Could not complete request.') .
                      '</b><br />' .
-                     _("Unknown response from IMAP server:") . ' 1.' .
-                     $r[0] . "</font><br />\n";
+                     _('Unknown response from IMAP server:') . ' 1.' .
+                     $r[0] . '</font><br />\n';
                 echo $str13;
             } else {
                 $id = $regs[2];
@@ -1057,7 +1057,7 @@ $startMessage = &$glb['startMessage'];
 $color = &$glb['color'];
 
         $errmessage = _("The server couldn't find the message you requested.") .
-            '<p>'._("Most probably your message list was out of date and the message has been moved away or deleted (perhaps by another program accessing the same mailbox).");
+            '<p>'._('Most probably your message list was out of date and the message has been moved away or deleted (perhaps by another program accessing the same mailbox).');
         /* this will include a link back to the message list */
         error_message($errmessage, $mailbox, $sort, (int) $startMessage, $color);
         trigger_error($errmessage,E_USER_ERROR);
@@ -1103,7 +1103,7 @@ function parse_message_entities(&$msg, $id, $imap_stream) {
               set_filter(false);
               set_no_return(false);
               set_outputstream(false);
-                $read = sqimap_run_command($imap_stream, "FETCH $id BODY[". $entity->entity_id .".HEADER]", true, $response, $message, $uid_support);
+                $read = sqimap_run_command($imap_stream, 'FETCH'. $id .'BODY'. $entity->entity_id .'[HEADER]', true, $response, $message, $uid_support);
                 $rfc822_header = new Rfc822Header();
                 $rfc822_header->parseHeader($read);
                 $msg->entities[$i]->rfc822_header = $rfc822_header;
@@ -1164,7 +1164,7 @@ $trash_folder = &$glb['trash_folder'];
             return FALSE;
         }
     }
-    sqimap_messages_flag ($imap_stream, $start, $end, "Deleted", true);
+    sqimap_messages_flag ($imap_stream, $start, $end, 'Deleted', true);
 }
 
 
@@ -1280,10 +1280,10 @@ function funzioneCaseImportance(){
 
 function funzioneCaseContentType(){
                                     $type = $value;
-                                    if ($pos = strpos($type, ";")) {
+                                    if ($pos = strpos($type, ';')) {
                                         $type = substr($type, 0, $pos);
                                     }
-                                    $type = explode("/", $type);
+                                    $type = explode('/', $type);
                                     if(!is_array($type) || count($type) < 2) {
                                         $aMsg['content-type'] = array('text','plain');
                                     } else {
@@ -1317,8 +1317,8 @@ function funzioneCaseBODY2(){
                                 $priority = parsePriority($value); break;
                             case 'subject':
                                 $subject = $value;
-                                if ($subject == "") {
-                                    $subject = _("(no subject)");
+                                if ($subject == '') {
+                                    $subject = _('(no subject)');
                                 }
                                 break;
                             case 'content-type':
@@ -1332,10 +1332,10 @@ function funzioneCaseBODY2(){
 }
 function funzioneCaseContentType2(){
                                 $type = strtolower($value);
-                                if ($pos = strpos($type, ";")) {
+                                if ($pos = strpos($type, ';')) {
                                     $type = substr($type, 0, $pos);
                                 }
-                                $type = explode("/", $type);
+                                $type = explode('/', $type);
                                 if ( empty($type[0]) ) {
                                     $type[0] = 'text';
 // I had this added, but not committed to CVS.... did it help fix something?

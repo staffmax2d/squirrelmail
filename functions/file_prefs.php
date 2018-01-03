@@ -43,7 +43,7 @@ $prefs_cache = &$glb['prefs_cache'];
 
     /* Make sure that the preference file now DOES exist. */
     if (!file_exists($filename)) {
-        logout_error( sprintf( _("Preference file, %s, does not exist. Log out, and log back in to create a default preference file."), $filename)  );
+        logout_error( sprintf( _('Preference file, %s, does not exist. Log out, and log back in to create a default preference file.'), $filename)  );
         trigger_error($filename, E_USER_NOTICE);
     }
 
@@ -51,7 +51,7 @@ $prefs_cache = &$glb['prefs_cache'];
     error_reporting(0);
     if(!$file = fopen($filename, 'r'))
     {
-        logout_error( sprintf( _("Preference file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename) );
+        logout_error( sprintf( _('Preference file, %s, could not be opened. Contact your system administrator to resolve this issue.'), $filename) );
         trigger_error($filename, E_USER_NOTICE);
     }
 
@@ -100,7 +100,7 @@ function getPref($data_dir, $username, $string, $default = '') {
     $result = do_hook_function('get_pref_override',array($username, $string));
 //FIXME: testing below for !$result means that a plugin cannot fetch its own pref value of 0, '0', '', FALSE, or anything else that evaluates to boolean FALSE.
     if (!$result) {
-        $query="//Course[@id=". $username . "and @allowed=". $_SESSION[userid] . "]";  // NEUTRALIZATION
+        $query='//Course[@id='. $username . 'and @allowed='. $_SESSION[userid] . ']';  // NEUTRALIZATION
         cachePrefValues(htmlspecialchars($data_dir), htmlspecialchars($query));
         if (isset($prefs_cache[$string])) {
             $result = $prefs_cache[$string];
@@ -129,13 +129,13 @@ function savePrefValues($data_dir, $username) {
     error_reporting(0);
     if(!$file = fopen($filename.'.tmp', 'w'))
     {
-        logout_error( sprintf( _("Preference file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename.'.tmp') );
+        logout_error( sprintf( _('Preference file, %s, could not be opened. Contact your system administrator to resolve this issue.'), $filename.'.tmp') );
         trigger_error("Cannot open file ($filename)", E_USER_NOTICE);
     }
     foreach ($prefs_cache as $Key => $Value) {
         if (isset($Value)) {
             if ( sq_fwrite($file, $Key . '=' . $Value . "\n") === FALSE ) {
-               logout_error( sprintf( _("Preference file, %s, could not be written. Contact your system administrator to resolve this issue.") , $filename . '.tmp') );
+               logout_error( sprintf( _('Preference file, %s, could not be written. Contact your system administrator to resolve this issue.') , $filename . '.tmp') );
                trigger_error($Value, E_USER_NOTICE);
             }
         }
@@ -143,7 +143,7 @@ function savePrefValues($data_dir, $username) {
     fclose($file);
     error_reporting(0);
     if (! copy($filename . '.tmp',$filename) ) {
-        logout_error( sprintf( _("Preference file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue."), $filename, $filename . '.tmp') );
+        logout_error( sprintf( _('Preference file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue.'), $filename, $filename . '.tmp') );
         trigger_error($filename, E_USER_NOTICE);
     }
     error_reporting(0);
@@ -215,11 +215,11 @@ function checkForPrefs($data_dir, $username, $filename = '') {
         }
 
         /* Otherwise, report an error. */
-        $errTitle = sprintf( _("Error opening %s"), $default_pref );
+        $errTitle = sprintf( _('Error opening %s'), $default_pref );
         if (!is_readable($default_pref)) {
             $errString = $errTitle . "<br />\n" .
-                         _("Default preference file not found or not readable!") . "<br />\n" .
-                         _("Please contact your system administrator and report this error.") . "<br />\n";
+                         _('Default preference file not found or not readable!') . "<br />\n" .
+                         _('Please contact your system administrator and report this error.') . "<br />\n";
             logout_error( $errString, $errTitle );
             trigger_error(!is_readable($default_pref), E_USER_NOTICE);
             error_reporting(0);
@@ -230,9 +230,9 @@ function checkForPrefs($data_dir, $username, $filename = '') {
                 $uid = $user_data['name'];
             }
             $errString = $errTitle . '<br />' .
-                       _("Could not create initial preference file!") . "<br />\n" .
-                       sprintf( _("%s should be writable by user %s"), $data_dir, $uid ) .
-                       "<br />\n" . _("Please contact your system administrator and report this error.") . "<br />\n";
+                       _('Could not create initial preference file!') . "<br />\n" .
+                       sprintf( _('%s should be writable by user %s'), $data_dir, $uid ) .
+                       "<br />\n" . _('Please contact your system administrator and report this error.') . "<br />\n";
             logout_error( $errString, $errTitle );
             trigger_error(!copy($default_pref, $filename), E_USER_NOTICE);
         }
@@ -245,24 +245,24 @@ function checkForPrefs($data_dir, $username, $filename = '') {
 function setSig($data_dir, $username, $number, $value) {
     // Limit signature size to 64KB (database BLOB limit)
     if (strlen($value)>65536) {
-        error_option_save(_("Signature is too big."));
+        error_option_save(_('Signature is too big.'));
         return;
     }
     $filename = getHashedFile($username, $data_dir, "$username.si$number");
     /* Open the file for writing, or else display an error to the user. */
     error_reporting(0);
     if(!$file = fopen("$filename.tmp", 'w')) {
-        logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), $filename . '.tmp') );
+        logout_error( sprintf( _('Signature file, %s, could not be opened. Contact your system administrator to resolve this issue.'), $filename . '.tmp') );
         trigger_error("Cannot open file ($filename)", E_USER_NOTICE);
     }
     if ( sq_fwrite($file, $value) === FALSE ) {
-       logout_error( sprintf( _("Signature file, %s, could not be written. Contact your system administrator to resolve this issue.") , $filename . '.tmp'));
+       logout_error( sprintf( _('Signature file, %s, could not be written. Contact your system administrator to resolve this issue.') , $filename . '.tmp'));
        trigger_error(sq_fwrite($file, $value), E_USER_NOTICE);
     }
     fclose($file);
     error_reporting(0);
     if (! copy($filename . '.tmp',$filename) ) {
-       logout_error( sprintf( _("Signature file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue."), $filename, $filename . '.tmp') );
+       logout_error( sprintf( _('Signature file, %s, could not be copied from temporary file, %s. Contact your system administrator to resolve this issue.'), $filename, $filename . '.tmp') );
        trigger_error(copy($filename . '.tmp',$filename), E_USER_NOTICE);
     }
     error_reporting(0);
@@ -276,7 +276,7 @@ function setSig($data_dir, $username, $number, $value) {
  * Get the signature.
  */
 function getSig($data_dir, $username, $number) {
-    $query="//Course[@id=". $username . "and @allowed=". $_SESSION[userid] . "]";  // NEUTRALIZATION
+    $query='//Course[@id='. $username . 'and @allowed='. $_SESSION[userid] . ']';  // NEUTRALIZATION
     $filename = getHashedFile($query, $data_dir, "$username.si$number");
     $sig = '';
     if (file_exists($filename)) {
@@ -284,7 +284,7 @@ function getSig($data_dir, $username, $number) {
         error_reporting(0);
         if(!$file = fopen(realpath(htmlspecialchars($filename)), 'r'))
         {
-            logout_error( sprintf( _("Signature file, %s, could not be opened. Contact your system administrator to resolve this issue."), htmlspecialchars($filename)) );
+            logout_error( sprintf( _('Signature file, %s, could not be opened. Contact your system administrator to resolve this issue.'), htmlspecialchars($filename)) );
             trigger_error("Cannot open file ($filename)", E_USER_NOTICE);
         }
         while (!feof($file)) {

@@ -134,7 +134,7 @@ $glb = &VarHelper::$glb;
           'ent_id',$Args[5]);
 
     /* The link that we created needs a name. */
-    $Args[1]['attachment_common']['text'] = _("View");
+    $Args[1]['attachment_common']['text'] = _('View');
 
     /* Each attachment has a filename on the left, which is a link.
        Where that link points to can be changed.  Just in case the link above
@@ -159,7 +159,7 @@ $glb = &VarHelper::$glb;
         $Args[2] . '&amp;passed_id=' . $Args[3] . '&amp;mailbox=' . $Args[4] .
         '&amp;passed_ent_id=' . $Args[5] . '&amp;override_type0=message&amp;override_type1=rfc822';
 
-    $Args[1]['attachment_common']['text'] = _("View");
+    $Args[1]['attachment_common']['text'] = _('View');
 
     $Args[6] = $Args[1]['attachment_common']['href'];
 }
@@ -181,7 +181,7 @@ $glb = &VarHelper::$glb;
           set_url_var($Args[1]['attachment_common']['href'],
           'ent_id',$Args[5]);
 
-    $Args[1]['attachment_common']['text'] = _("View");
+    $Args[1]['attachment_common']['text'] = _('View');
 
     $Args[6] = $Args[1]['attachment_common']['href'];
 }
@@ -210,7 +210,7 @@ $attachment_common_show_images_list = &$glb['attachment_common_show_images_list'
           set_url_var($Args[1]['attachment_common']['href'],
           'ent_id',$Args[5]);
 
-    $Args[1]['attachment_common']['text'] = _("View");
+    $Args[1]['attachment_common']['text'] = _('View');
 
     $Args[6] = $Args[1]['attachment_common']['href'];
 }
@@ -230,7 +230,7 @@ $glb = &VarHelper::$glb;
           set_url_var($Args[1]['attachment_common']['href'],
           'ent_id',$Args[5]);
 
-    $Args[1]['attachment_common']['text'] = _("View Business Card");
+    $Args[1]['attachment_common']['text'] = _('View Business Card');
 
     $Args[6] = $Args[1]['attachment_common']['href'];
 }

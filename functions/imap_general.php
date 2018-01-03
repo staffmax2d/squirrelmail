@@ -29,9 +29,9 @@ function sqimap_session_id($unique_id = FALSE) {
     static $sqimap_session_id = 1;
 
     if (!$unique_id) {
-        return( sprintf("A%03d", $sqimap_session_id++) );
+        return( sprintf('A%03d', $sqimap_session_id++) );
     } else {
-        return( sprintf("A%03d", $sqimap_session_id++) . ' UID' );
+        return( sprintf('A%03d', $sqimap_session_id++) . ' UID' );
     }
 }
 
@@ -47,11 +47,11 @@ function sqimap_run_command_list ($imap_stream, $query, $handle_errors, &$respon
         include_once __DIR__ . '/libs/csrf/csrfprotector.php';
         csrfProtector::init();
         $sid = sqimap_session_id($unique_id);
-        fputs ($imap_stream, $sid . ' ' . $query . "\r\n");
+        fputs ($imap_stream, $sid . ' ' . $query . '\r\n');
         set_filter(false);
         set_outputstream(false);
         set_no_return(false);
-        $read = sqimap_read_data_list ($imap_stream, $sid, $handle_errors, $response, $message, $query );
+        $read = sqimap_read_data_list ($imap_stream, $sid, $handle_errors, $response, $message, $query);
         return $read;
     } else {
         
@@ -59,9 +59,9 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
 $color = &$glb['color']; 
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
-        $string = "<b><font color=\"$color[2]\">\n" .
-                _("ERROR: No available IMAP stream.") .
-                "</b></font>\n";
+        $string = "<b><font color='".$color[2]."'>\n" .
+                _('ERROR: No available IMAP stream.') .
+                '</b></font>\n';
         error_box($string,$color);
         return false;
     }
@@ -75,12 +75,12 @@ function sqimap_run_command ($imap_stream, $query, $handle_errors, &$response,&$
         include_once __DIR__ . '/libs/csrf/csrfprotector.php';
         csrfProtector::init();
         $sid = sqimap_session_id($unique_id);
-        fputs ($imap_stream, $sid . ' ' . $query . "\r\n");
+        fputs ($imap_stream, $sid . ' ' . $query . '\r\n');
         set_filter( $filter);
         set_outputstream($outputstream);
         set_no_return($no_return);
         $read = sqimap_read_data ($imap_stream, $sid, $handle_errors, $response,
-                                  $message, $query,$filter,$outputstream,$no_return);
+                                  $message, $query);
         return $read;
     } else {
     $glb = &VarHelper::$glb;    
@@ -88,9 +88,9 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
 $color = &$glb['color']; 
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
-        $string = "<b><font color=\"$color[2]\">\n" .
-                _("ERROR: No available IMAP stream.") .
-                "</b></font>\n";
+        $string = "<b><font color='".$color[2]."'>\n" .
+                _('ERROR: No available IMAP stream.') .
+                '</b></font>\n';
         error_box($string,$color);
         return false;
     }
@@ -101,7 +101,7 @@ function sqimap_run_literal_command($imap_stream, $query, $handle_errors, &$resp
         include_once __DIR__ . '/libs/csrf/csrfprotector.php';
         csrfProtector::init();
         $sid = sqimap_session_id($unique_id);
-        $command = sprintf("%s {%d}\r\n", $query['command'], strlen($query['literal_args'][0]));
+        $command = sprintf('%s {%d}\r\n', $query['command'], strlen($query['literal_args'][0]));
         fputs($imap_stream, $sid . ' ' . $command);
 
         // TODO: Put in error handling here //
@@ -113,9 +113,9 @@ function sqimap_run_literal_command($imap_stream, $query, $handle_errors, &$resp
         $cnt = count($query['literal_args']);
         while( $i < $cnt ) {
         	if (($cnt > 1) && ($i < ($cnt - 1))) {
-				$command = sprintf("%s {%d}\r\n", $query['literal_args'][$i], strlen($query['literal_args'][$i+1]));
+				$command = sprintf('%s {%d}\r\n', $query['literal_args'][$i], strlen($query['literal_args'][$i+1]));
 			} else {
-				$command = sprintf("%s\r\n", $query['literal_args'][$i]);
+				$command = sprintf('%s\r\n', $query['literal_args'][$i]);
 			}
         	
 			fputs($imap_stream, $command);
@@ -134,9 +134,9 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
 $color = &$glb['color']; 
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
-        $string = "<b><font color=\"$color[2]\">\n" .
-                _("ERROR: No available IMAP stream.") .
-                "</b></font>\n";
+        $string = "<b><font color='".$color[2]."'>\n" .
+                _('ERROR: No available IMAP stream.') .
+                '</b></font>\n';
         error_box($string,$color);
         return false;
     }
@@ -154,7 +154,7 @@ function sqimap_fgets($imap_stream) {
     $buffer = 4096;
     $results = '';
     $offset = 0;
-    while (strpos($results, "\r\n", $offset) === false) {
+    while (strpos($results, '\r\n', $offset) === false) {
         if (!($read = fgets($imap_stream, $buffer))) {
         /* this happens in case of an error */
         /* reset $results because it's useless */
@@ -297,7 +297,7 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
             $arg = '';
             $i = strlen($tag)+1;
             $s = substr($read,$i);
-            if (($j = strpos($s,' ')) || ($j = strpos($s,"\n"))) {
+            if (($j = strpos($s,' ')) || ($j = strpos($s,'\n'))) {
                 $arg = substr($s,0,$j);
             }
             $found_tag = substr($read,0,$i-1);
@@ -348,11 +348,11 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
                                 goto d; /* while while switch while */
                             }
                             /* backwards compattibility */
-                            $aLiteral = explode("\n", $sLiteral);
+                            $aLiteral = explode('\n', $sLiteral);
                             /* release not neaded data */
                             unset($sLiteral);
                             foreach ($aLiteral as $line) {
-                                $fetch_data[] = $line ."\n";
+                                $fetch_data[] = $line .'\n';
                             }
                             /* release not neaded data */
                             unset($aLiteral);
@@ -378,7 +378,7 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
                         /* check for next untagged reponse and break */
                         if ($read{0} == '*') goto e;
                         $s = substr($read,-3);
-                    } while ($s === "}\r\n" || $read_literal);
+                    } while ($s === '}\r\n' || $read_literal);
                     $s = substr($read,-3);
                 } while ($read{0} !== '*' &&
                          substr($read,0,strlen($tag)) !== $tag);
@@ -388,7 +388,7 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
             } else {
                 $s = substr($read,-3);
                 do {
-                    if ($s === "}\r\n") {
+                    if ($s === '}\r\n') {
                         $j = strrpos($read,'{');
                         $iLit = substr($read,$j+1,-3);
                         // check for numeric value to avoid that untagged responses like:
@@ -416,7 +416,7 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
                         break;
                     }
                     $s = substr($read,-3);
-                } while ($s === "}\r\n");
+                } while ($s === '}\r\n');
                 break 1;
             }
             break;
@@ -429,14 +429,14 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
         unset($data);
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
-        $string = "<b><font color=\"$color[2]\">\n" .
-                  _("ERROR: Connection dropped by IMAP server.") .
-                  "</b><br />\n";
+        $string = "<b><font color='".$color[2]."'>\n" .
+                  _('ERROR: Connection dropped by IMAP server.') .
+                  '</b><br />\n';
         $cmd = explode(' ',$query);
         $cmd = strtolower($cmd[0]);
         if ($query != '' &&  $cmd != 'login') {
-            $string .= ("Query:") . ' '. htmlspecialchars($query)
-            . '<br />' . "</font><br />\n";
+            $string .= ('Query:') . ' '. htmlspecialchars($query)
+            . '<br />' . '</font><br />\n';
         }
         error_box($string,$color);
         trigger_error($string,E_USER_NOTICE);
@@ -463,13 +463,13 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
         if (strstr($message, 'command resulted in') === false) {
             set_up_language($squirrelmail_language);
             (require_once SM_PATH . 'functions/display_messages.php');
-            $string = "<b><font color=\"$color[2]\">\n" .
-                _("ERROR: Could not complete request.") .
-                "</b><br />\n" .
-                _("Query:") . ' ' .
+            $string = "<b><font color='".$color[2]."'>\n" .
+                _('ERROR: Could not complete request.') .
+                '</b><br />\n' .
+                _('Query:') . ' ' .
                 htmlspecialchars($query) . '<br />' .
-                _("Reason Given:") . ' ' .
-                htmlspecialchars($message) . "</font><br />\n";
+                _('Reason Given:') . ' ' .
+                htmlspecialchars($message) . '</font><br />\n';
             error_box($string,$color);
             $str10= '</body></html>';
             echo $str10;
@@ -485,13 +485,13 @@ $squirrelmail_language = &$glb['squirrelmail_language'];
     default:
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
-        $string = "<b><font color=\"$color[2]\">\n" .
-            _("ERROR: Unknown IMAP response.") .
-            "</b><br />\n" .
-            _("Query:") . ' '.
+        $string = "<b><font color='".$color[2]."'>\n" .
+            _('ERROR: Unknown IMAP response.') .
+            '</b><br />\n' .
+            _('Query:') . ' '.
             htmlspecialchars($query) . '<br />' .
-            _("Server responded:") . ' ' .
-            htmlspecialchars($message) . "</font><br />\n";
+            _('Server responded:') . ' ' .
+            htmlspecialchars($message) . '</font><br />\n';
         error_box($string,$color);
        /* the error is displayed but because we don't know the reponse we
           return the result anyway */
@@ -564,10 +564,10 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
         if (!$hide) {
             set_up_language($squirrelmail_language, true);
             (require_once SM_PATH . 'functions/display_messages.php');
-            $errorNum = htmlspecialchars("<br />\r\n$error_number : $error_string<br />\r\n");
-            logout_error( sprintf(_("Error connecting to IMAP server: %s."), $imap_server_address).
+            $errorNum = htmlspecialchars('<br />\r\n$error_number : $error_string<br />\r\n');
+            logout_error( sprintf(_('Error connecting to IMAP server: %s.'), $imap_server_address).
                 $errorNum,
-		sprintf(_("Error connecting to IMAP server: %s."), $imap_server_address) );
+		sprintf(_('Error connecting to IMAP server: %s.'), $imap_server_address) );
         }
         trigger_error('Error connecting to IMAP server: '.$imap_server_address,E_USER_NOTICE);
     }
@@ -580,16 +580,16 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
         // We're using some sort of authentication OTHER than plain or login
         $tag=sqimap_session_id(false);
         if ($imap_auth_mech == 'digest-md5') {
-            $query = $tag . " AUTHENTICATE DIGEST-MD5\r\n";
+            $query = $tag . ' AUTHENTICATE DIGEST-MD5\r\n';
         } elseif ($imap_auth_mech == 'cram-md5') {
-            $query = $tag . " AUTHENTICATE CRAM-MD5\r\n";
+            $query = $tag . ' AUTHENTICATE CRAM-MD5\r\n';
         }
         include_once __DIR__ . '/libs/csrf/csrfprotector.php';
         csrfProtector::init();
         fputs($imap_stream,$query);
         $answer=sqimap_fgets($imap_stream);
         // Trim the "+ " off the front
-        $response=explode(" ",$answer,3);
+        $response=explode(' ',$answer,3);
         if ($response[0] == '+') {
             // Got a challenge back
             $challenge=$response[1];
@@ -603,16 +603,16 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
             if ($imap_auth_mech == 'digest-md5') {
                 // DIGEST-MD5 has an extra step..
                 if (substr($read,0,1) == '+') { // OK so far..
-                    fputs($imap_stream,"\r\n");
+                    fputs($imap_stream,'\r\n');
                     $read=sqimap_fgets($imap_stream);
                 }
             }
-            $results=explode(" ",$read,3);
+            $results=explode(' ',$read,3);
             $response=$results[1];
             $message=$results[2];
         } else {
             // Fake the response, so the error trap at the bottom will work
-            $response="BAD";
+            $response='BAD';
             $message='IMAP server does not appear to support the authentication method selected.';
             $message .= '  Please contact your system administrator.';
         }
@@ -622,12 +622,12 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
         // not send LOGIN when LOGINDISABLED is advertised.
         if(stristr($server_info, 'LOGINDISABLED')) {
             $response = 'BAD';
-            $message = _("The IMAP server is reporting that plain text logins are disabled.").' '.
-                _("Using CRAM-MD5 or DIGEST-MD5 authentication instead may work.").' ';
+            $message = _('The IMAP server is reporting that plain text logins are disabled.').' '.
+                _('Using CRAM-MD5 or DIGEST-MD5 authentication instead may work.').' ';
             if (!$use_imap_tls) {
-                $message .= _("Also, the use of TLS may allow SquirrelMail to login.").' ';
+                $message .= _('Also, the use of TLS may allow SquirrelMail to login.').' ';
             }
-            $message .= _("Please contact your system administrator and report this error.");
+            $message .= _('Please contact your system administrator and report this error.');
         } else {
             // Original IMAP login code
             if(sq_is8bit($username) || sq_is8bit($password)) {
@@ -636,8 +636,8 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
                 $query['literal_args'][1] = $password;
                 $read = sqimap_run_literal_command($imap_stream, $query, false, $response, $message);
             } else {
-                $query = 'LOGIN "' . quoteimap($username) . '"'
-                       . ' "' . quoteimap($password) . '"';
+                $query = "LOGIN '". quoteimap($username) . "'"
+                       . " '" . quoteimap($password) . "'";
                set_filter(false);
                set_no_return(false);
                set_outputstream(false);
@@ -646,11 +646,11 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
         }
     } elseif ($imap_auth_mech == 'plain') {
         /* Replace this with SASL PLAIN if it ever gets implemented */
-        $response="BAD";
+        $response='BAD';
         $message='SquirrelMail does not support SASL PLAIN yet. Rerun conf.pl and use login instead.';
     } else {
-        $response="BAD";
-        $message="Internal SquirrelMail error - unknown IMAP authentication method chosen.  Please contact the developers.";
+        $response='BAD';
+        $message='Internal SquirrelMail error - unknown IMAP authentication method chosen.  Please contact the developers.';
     }
 
     /* If the connection was not successful, lets see why */
@@ -662,14 +662,14 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
                 set_up_language($squirrelmail_language, true);
                 (require_once SM_PATH . 'functions/display_messages.php');
                 if ($response == 'BAD') {
-                    $string = sprintf (_("Bad request: %s")."<br />\r\n", $message);
+                    $string = sprintf (_('Bad request: %s').'<br />\r\n', $message);
                 } else {
-                    $string = sprintf (_("Unknown error: %s") . "<br />\n", $message);
+                    $string = sprintf (_('Unknown error: %s') . '<br />\n', $message);
                 }
                 if (isset($read) && is_array($read)) {
-                    $string .= '<br />' . _("Read data:") . "<br />\n";
+                    $string .= '<br />' . _('Read data:') . '<br />\n';
                     foreach ($read as $line) {
-                        $string .= htmlspecialchars($line) . "<br />\n";
+                        $string .= htmlspecialchars($line) . '<br />\n';
                     }
                 }
                 error_box($string,$color);
@@ -691,7 +691,7 @@ $imap_auth_mech = &$glb['imap_auth_mech'];
                 sqsession_destroy();
                 /* terminate the session nicely */
                 sqimap_logout($imap_stream);
-                logout_error( _("Unknown user or password incorrect.") );
+                logout_error( _('Unknown user or password incorrect.') );
                 trigger_error('Unknown user or password incorrect.',E_USER_NOTICE);
             }
         } else {
@@ -878,7 +878,7 @@ function parseAddress($address, $max=0) {
             if ($iEnd) {
                 // skip escaped quotes
                 $prev_char = $address{$iEnd-1};
-                while ($prev_char === '\\' && substr($address,$iEnd-2,2) !== '\\\\') {
+                while ($prev_char === "\\" && substr($address,$iEnd-2,2) !== "\\\\") {
                     $iEnd = strpos($address,$cChar,$iEnd+1);
                     if ($iEnd) {
                         $prev_char = $address{$iEnd-1};
@@ -1068,22 +1068,22 @@ $color = &$glb['color'];
         $reason = $regs[3];
         if ($regs[2] == 'NO') {
            $string = "<b><font color=\"$color[2]\">\n" .
-                  _("ERROR: Could not append message to") ." $folder." .
-                  "</b><br />\n" .
-                  _("Server responded:") . ' ' .
-                  $reason . "<br />\n";
+                  _('ERROR: Could not append message to') . $folder
+                  .'</b><br />\n' .
+                  _('Server responded:') . ' ' .
+                  $reason . '<br />\n';
            if (preg_match("/(.*)(quota)(.*)$/i", $reason, $regs)) {
-              $string .= _("Solution:") . ' ' .
-            _("Remove unneccessary messages from your folders. Start with your Trash folder.")
+              $string .= _('Solution:') . ' ' .
+            _('Remove unneccessary messages from your folders. Start with your Trash folder.')
               ."<br />\n";
            }
            $string .= "</font>\n";
            error_box($string,$color);
         } else {
            $string = "<b><font color=\"$color[2]\">\n" .
-                  _("ERROR: Bad or malformed request.") .
+                  _('ERROR: Bad or malformed request.') .
                   "</b><br />\n" .
-                  _("Server responded:") . ' ' .
+                  _('Server responded:') . ' ' .
                   $reason . "</font><br />\n";
            error_box($string,$color);
            trigger_error($string,E_USER_NOTICE);
@@ -1092,7 +1092,7 @@ $color = &$glb['color'];
 }
 
 function sqimap_get_user_server ($imap_server, $username) {
-   if (substr($imap_server, 0, 4) != "map:") {
+   if (substr($imap_server, 0, 4) != 'map:') {
        return $imap_server;
    }
    $function = substr($imap_server, 4);
@@ -1115,11 +1115,11 @@ function funzioneCaseBAD(){
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
         $string = "<b><font color=\"$color[2]\">\n" .
-            _("ERROR: Bad or malformed request.") .
+            _('ERROR: Bad or malformed request.') .
             "</b><br />\n" .
-            _("Query:") . ' '.
+            _('Query:') . ' '.
             htmlspecialchars($query) . '<br />' .
-            _("Server responded:") . ' ' .
+            _('Server responded:') . ' ' .
             htmlspecialchars($message) . "</font><br />\n";
         error_box($string,$color);
         $str8= '</body></html>';
@@ -1131,11 +1131,11 @@ function funzioneCaseBYE(){
         set_up_language($squirrelmail_language);
         (require_once SM_PATH . 'functions/display_messages.php');
         $string = "<b><font color=\"$color[2]\">\n" .
-            _("ERROR: IMAP server closed the connection.") .
+            _('ERROR: IMAP server closed the connection.') .
             "</b><br />\n" .
-            _("Query:") . ' '.
+            _('Query:') . ' '.
             htmlspecialchars($query) . '<br />' .
-            _("Server responded:") . ' ' .
+            _('Server responded:') . ' ' .
             htmlspecialchars($message) . "</font><br />\n";
         error_box($string,$color);
         $str9= '</body></html>';

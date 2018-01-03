@@ -241,7 +241,7 @@ $mailbox = &$glb['mailbox'];
             if ($i == $entCount-1) $last = true;
         }
         if ($boundary && $last) {
-            $s = "--".$boundary_new."--\r\n\r\n";
+            $s = '--'.$boundary_new.'--\r\n\r\n';
             $length_raw += strlen($s);
             if ($stream) {
                 $this->preWriteToStream($s);
@@ -1146,9 +1146,9 @@ $show_timezone_name = &$glb['show_timezone_name'];
         //
         if ($show_timezone_name) {
             $zonename = '('.strftime('%Z').')';
-            $result = sprintf ("%s%02d%02d %s", $sign, $diff_hour, $diff_minute, $zonename);
+            $result = sprintf ('%s%02d%02d %s', $sign, $diff_hour, $diff_minute, $zonename);
         } else {
-            $result = sprintf ("%s%02d%02d", $sign, $diff_hour, $diff_minute);
+            $result = sprintf ('%s%02d%02d', $sign, $diff_hour, $diff_minute);
         }
         return ($result);
     }

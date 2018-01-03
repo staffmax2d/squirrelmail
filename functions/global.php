@@ -64,7 +64,7 @@ if ((bool) ini_get('register_globals') &&
  */
 $php_session_auto_start = ini_get('session.auto_start');
 if ((bool)$php_session_auto_start && $php_session_auto_start != 'off') {
-    trigger_error('SquirrelMail 1.4.x is not compatible with PHP\'s session.auto_start setting.  Please disable it at least for the location where SquirrelMail is installed.',E_USER_NOTICE);
+    trigger_error('SquirrelMail 1.4.x is not compatible with PHP session.auto_start setting.  Please disable it at least for the location where SquirrelMail is installed.',E_USER_NOTICE);
 }
 
 /**
@@ -556,8 +556,8 @@ function get_bReplace(){
 
 
 
-function sqsetcookie($sName, $sValue='deleted', $iExpire=0, $sPath="", $sDomain="",
-                     $bSecure=false) {
+function sqsetcookie($sName, $sValue='deleted', $iExpire=0, $sPath='', $sDomain='',
+               $bSecure=false) {
     
     $bHttpOnly = get_bHttpOnly();
     $bReplace = get_bReplace();

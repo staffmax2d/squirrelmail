@@ -176,8 +176,8 @@ class Rfc822Header {
                 case '"':
                     $result .= '"';
                     while ((++$i < $cnt) && ($value{$i} != '"')) {
-                        if ($value{$i} == '\\') {
-                            $result .= '\\';
+                        if ($value{$i} == "\\") {
+                            $result .= "\\";
                             ++$i;
                         }
                         $result .= $value{$i};
@@ -188,7 +188,7 @@ class Rfc822Header {
                     $depth = 1;
                     while (($depth > 0) && (++$i < $cnt)) {
                         switch($value{$i}) {
-                            case '\\':
+                            case "\\":
                                 ++$i;
                                 break;
                             case '(':
@@ -297,7 +297,7 @@ class Rfc822Header {
                 if ($iEnd) {
                    // skip escaped quotes
                    $prev_char = $address{$iEnd-1};
-                   while ($prev_char === '\\' && substr($address,$iEnd-2,2) !== '\\\\') {
+                   while ($prev_char === "\\" && substr($address,$iEnd-2,2) !== "\\\\") {
                        $iEnd = strpos($address,$cChar,$iEnd+1);
                        if ($iEnd) {
                           $prev_char = $address{$iEnd-1};
@@ -902,7 +902,7 @@ function funzioneCaseParentesi(){
                     while (($iDepth > 0) && (++$iComment < $iCnt)) {
                         $cCharComment = $address{$iComment};
                         switch($cCharComment) {
-                            case '\\':
+                            case "\\":
                                 ++$iComment;
                                 break;
                             case '(':

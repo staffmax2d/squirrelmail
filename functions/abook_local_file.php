@@ -103,7 +103,7 @@ class abook_local_file extends addressbook_backend {
      * @return bool
      */
     function abook_local_file($param) {
-         $this->sname = _("Personal address book");
+         $this->sname = _('Personal address book');
         $this->umask = Umask();
         try{
         if(is_array($param)) {
@@ -144,11 +144,11 @@ class abook_local_file extends addressbook_backend {
         }
         }
         catch (InvalidFileNameException $e) {
-            echo "Exception ".": ".$e->getMessage();
+            echo 'Exception '.': '.$e->getMessage();
         }
         
          catch (InvalidParException $e) {
-            echo "Exception ".": ".$e->getMessage();
+            echo 'Exception '.': '.$e->getMessage();
         }
         
     }
@@ -174,7 +174,7 @@ class abook_local_file extends addressbook_backend {
 
         /* Check that new file exitsts */
         if((!(file_exists($file) && is_readable($file))) && !$create) {
-            return $this->set_error("$file: " . _("No such file or directory"));
+            return $this->set_error('$file: ' . _('No such file or directory'));
         }
 
         /* Close old file, if any */
@@ -188,7 +188,7 @@ class abook_local_file extends addressbook_backend {
                 $this->filehandle = &$fh;
                 $this->filename = $file;
             } else {
-                return $this->set_error("$file: " . _("Open failed"));
+                return $this->set_error('$file: ' . _('Open failed'));
             }
         } else {
             /* Open file. First try to open for reading and writing,
@@ -207,7 +207,7 @@ class abook_local_file extends addressbook_backend {
                     $this->filename   = $file;
                     $this->writeable  = false;
                 } else {
-                    return $this->set_error("$file: " . _("Open failed"));
+                    return $this->set_error('$file: ' . _('Open failed'));
                 }
             }
         }
@@ -251,7 +251,7 @@ class abook_local_file extends addressbook_backend {
         $newfh = fopen($this->filename.'.tmp', 'w');
 
         if(!$newfh) {
-            return $this->set_error($this->filename. '.tmp:' . _("Open failed"));
+            return $this->set_error($this->filename. '.tmp:' . _('Open failed'));
         }
 
         for($i = 0, $cnt=sizeof($rows) ; $i < $cnt ; $i++) {
@@ -261,7 +261,7 @@ class abook_local_file extends addressbook_backend {
                 }
                 $tmpwrite = sq_fwrite($newfh, join('|', $rows[$i]) . "\n");
                 if ($tmpwrite === FALSE) {
-                    return $this->set_error($this->filename . '.tmp:' . _("Write failed"));
+                    return $this->set_error($this->filename . '.tmp:' . _('Write failed'));
                 }
             }
         }
@@ -269,7 +269,7 @@ class abook_local_file extends addressbook_backend {
         fclose($newfh);
         error_reporting(0);
         if (!copy($this->filename . '.tmp' , $this->filename)) {
-          return $this->set_error($this->filename . ':' . _("Unable to update"));
+          return $this->set_error($this->filename . ':' . _('Unable to update'));
         }
         error_reporting(0);
         unlink($this->filename . '.tmp');
@@ -316,7 +316,7 @@ class abook_local_file extends addressbook_backend {
                 /** address book is corrupted. */
                 $glb = &VarHelper::$glb;
 $color = &$glb['color'];
-                error_box(_("Address book is corrupted. Required fields are missing.</body></html>"),$color);
+                error_box(_('Address book is corrupted. Required fields are missing.</body></html>'),$color);
                 trigger_error('Address book is corrupted. Required fields are missing.',E_USER_NOTICE);
             } else {
                 $line = join(' ', $row);
@@ -370,7 +370,7 @@ $color = &$glb['color'];
                 /** address book is corrupted. */
                 $glb = &VarHelper::$glb;
 $color = &$glb['color'];
-                error_box(_("Address book is corrupted. Required fields are missing.</body></html>"),$color);
+                error_box(_('Address book is corrupted. Required fields are missing.</body></html>'),$color);
                 trigger_error('Address book is corrupted. Required fields are missing.',E_USER_NOTICE);
             } else {
                 if(strtolower($row[$field]) == $value) {
@@ -410,7 +410,7 @@ $color = &$glb['color'];
                 /** address book is corrupted. */
                 $glb = &VarHelper::$glb;
 $color = &$glb['color'];
-                error_box(_("Address book is corrupted. Required fields are missing.</body></html>"),$color);
+                error_box(_('Address book is corrupted. Required fields are missing.</body></html>'),$color);
                 trigger_error('Address book is corrupted. Required fields are missing.',E_USER_NOTICE);
             } else {
                 array_push($res, array('nickname'  => $row[0],
@@ -433,7 +433,7 @@ $color = &$glb['color'];
      */
     function add($userdata) {
         if(!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
         /* See if user exists already */
         $ret = $this->lookup($userdata['nickname']);
@@ -458,7 +458,7 @@ $color = &$glb['color'];
          * One byte is reserved for linefeed
          */
         if (strlen($data) >= $this->line_length) {
-            return $this->set_error(_("Address book entry is too big"));
+            return $this->set_error(_('Address book entry is too big'));
         }
 
         /* Add linefeed at end */
@@ -467,12 +467,12 @@ $color = &$glb['color'];
         /* Reopen file, just to be sure */
         $this->open(true);
         if(!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
 
         /* Lock the file */
         if(!$this->lock()) {
-            return $this->set_error(_("Could not lock datafile"));
+            return $this->set_error(_('Could not lock datafile'));
         }
 
         /* Write */
@@ -484,7 +484,7 @@ $color = &$glb['color'];
         /* Test write result */
         if($r === FALSE) {
             /* Fail */
-            $this->set_error(_("Write to address book failed"));
+            $this->set_error(_('Write to address book failed'));
             return FALSE;
         }
 
@@ -498,13 +498,13 @@ $color = &$glb['color'];
      */
     function remove($alias) {
         if(!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
 
         /* Lock the file to make sure we're the only process working
          * on it. */
         if(!$this->lock()) {
-            return $this->set_error(_("Could not lock datafile"));
+            return $this->set_error(_('Could not lock datafile'));
         }
 
         /* Read file into memory, ignoring nicknames to delete */
@@ -537,7 +537,7 @@ $color = &$glb['color'];
      */
     function modify($alias, $userdata) {
         if(!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_('Address book is read-only'));
         }
 
         /* See if user exists */
@@ -563,13 +563,13 @@ $color = &$glb['color'];
             . $this->quotevalue((!empty($userdata['label'])?$userdata['label']:''));
         /* make sure that it fits into allocated space */
         if (strlen($data) >= $this->line_length) {
-            return $this->set_error(_("Address book entry is too big"));
+            return $this->set_error(_('Address book entry is too big'));
         }
 
         /* Lock the file to make sure we're the only process working
          * on it. */
         if(!$this->lock()) {
-            return $this->set_error(_("Could not lock datafile"));
+            return $this->set_error(_('Could not lock datafile'));
         }
 
         /* Read file into memory, modifying the data for the

@@ -56,7 +56,7 @@ header('Content-Type: text/html');
 
 $str1= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'
     ."\n<head>\n<meta name=\"robots\" content=\"noindex,nofollow\">\n"
-    ."</head><body>";
+    .'</head><body>';
 echo $str1;
     
 
@@ -86,11 +86,11 @@ if (sqgetGlobalVar('submit',$submit,SQ_POST)) {
             if (sqgetGlobalVar('ip_addr',$is_addr,SQ_POST)) {
                 $string=hex2ip($string);
             }
-            $str5= "<p>Decoded string: ".htmlspecialchars($string)."</p>\n";
+            $str5= '<p>Decoded string: '.htmlspecialchars($string).'</p>\n';
             echo $str5;
         }
     }
-    echo "<hr />";
+    echo '<hr />';
 }
 ?>
 <form action="<?php echo $PHP_SELF ?>" method="post" >

@@ -99,25 +99,25 @@ function getDayName( $day_number ) {
 
     switch( $day_number ) {
     case 0:
-        $ret = _("Sunday");
+        $ret = _('Sunday');
         break;
     case 1:
-        $ret = _("Monday");
+        $ret = _('Monday');
         break;
     case 2:
-        $ret = _("Tuesday");
+        $ret = _('Tuesday');
         break;
     case 3:
-        $ret = _("Wednesday");
+        $ret = _('Wednesday');
         break;
     case 4:
-        $ret = _("Thursday");
+        $ret = _('Thursday');
         break;
     case 5:
-        $ret = _("Friday");
+        $ret = _('Friday');
         break;
     case 6:
-        $ret = _("Saturday");
+        $ret = _('Saturday');
         break;
     default:
         $ret = '';
@@ -134,25 +134,25 @@ function getDayAbrv( $day_number ) {
 
     switch( $day_number ) {
     case 0:
-        $ret = _("Sun");
+        $ret = _('Sun');
         break;
     case 1:
-        $ret = _("Mon");
+        $ret = _('Mon');
         break;
     case 2:
-        $ret = _("Tue");
+        $ret = _('Tue');
         break;
     case 3:
-        $ret = _("Wed");
+        $ret = _('Wed');
         break;
     case 4:
-        $ret = _("Thu");
+        $ret = _('Thu');
         break;
     case 5:
-        $ret = _("Fri");
+        $ret = _('Fri');
         break;
     case 6:
-        $ret = _("Sat");
+        $ret = _('Sat');
         break;
     default:
         $ret = '';
@@ -170,40 +170,40 @@ function getDayAbrv( $day_number ) {
 function getMonthName( $month_number ) {
     switch( $month_number ) {
      case '01':
-        $ret = _("January");
+        $ret = _('January');
         break;
      case '02':
-        $ret = _("February");
+        $ret = _('February');
         break;
      case '03':
-        $ret = _("March");
+        $ret = _('March');
         break;
      case '04':
-        $ret = _("April");
+        $ret = _('April');
         break;
      case '05':
-        $ret = _("May");
+        $ret = _('May');
         break;
      case '06':
-        $ret = _("June");
+        $ret = _('June');
         break;
      case '07':
-        $ret = _("July");
+        $ret = _('July');
         break;
      case '08':
-        $ret = _("August");
+        $ret = _('August');
         break;
      case '09':
-        $ret = _("September");
+        $ret = _('September');
         break;
      case '10':
-        $ret = _("October");
+        $ret = _('October');
         break;
      case '11':
-        $ret = _("November");
+        $ret = _('November');
         break;
      case '12':
-        $ret = _("December");
+        $ret = _('December');
         break;
      default:
         $ret = '';
@@ -221,40 +221,40 @@ function getMonthName( $month_number ) {
 function getMonthAbrv( $month_number ) {
     switch( $month_number ) {
      case '01':
-        $ret = _("Jan");
+        $ret = _('Jan');
         break;
      case '02':
-        $ret = _("Feb");
+        $ret = _('Feb');
         break;
      case '03':
-        $ret = _("Mar");
+        $ret = _('Mar');
         break;
      case '04':
-        $ret = _("Apr");
+        $ret = _('Apr');
         break;
      case '05':
-        $ret = _("Ma&#121;");
+        $ret = _('Ma&#121;');
         break;
      case '06':
-        $ret = _("Jun");
+        $ret = _('Jun');
         break;
      case '07':
-        $ret = _("Jul");
+        $ret = _('Jul');
         break;
      case '08':
-        $ret = _("Aug");
+        $ret = _('Aug');
         break;
      case '09':
-        $ret = _("Sep");
+        $ret = _('Sep');
         break;
      case '10':
-        $ret = _("Oct");
+        $ret = _('Oct');
         break;
      case '11':
-        $ret = _("Nov");
+        $ret = _('Nov');
         break;
      case '12':
-        $ret = _("Dec");
+        $ret = _('Dec');
         break;
      default:
         $ret = '';
@@ -303,9 +303,9 @@ $hour_format = &$glb['hour_format'];
     }
 
     if ( $hour_format == SMPREF_TIME_12HR ) {
-        $date_format = _("D, F j, Y g:i a");
+        $date_format = _('D, F j, Y g:i a');
     } else {
-        $date_format = _("D, F j, Y H:i");
+        $date_format = _('D, F j, Y H:i');
     }
 
     return( date_intl( $date_format, $stamp ) );
@@ -354,24 +354,24 @@ $show_full_date = &$glb['show_full_date'];
     $nextmid = $midnight + 86400;
 
     if (($show_full_date == 1) || ($nextmid < $stamp)) {
-        $date_format = _("M j, Y");
+        $date_format = _('M j, Y');
     } else if ($midnight < $stamp) {
         /* Today */
         if ( $hour_format == SMPREF_TIME_12HR ) {
-            $date_format = _("g:i a");
+            $date_format = _('g:i a');
         } else {
-            $date_format = _("H:i");
+            $date_format = _('H:i');
         }
     } else if ($midnight - 518400 < $stamp) {
         /* This week */
         if ( $hour_format == SMPREF_TIME_12HR ) {
-            $date_format = _("D, g:i a");
+            $date_format = _('D, g:i a');
         } else {
-            $date_format = _("D, H:i");
+            $date_format = _('D, H:i');
         }
     } else {
         /* before this week */
-        $date_format = _("M j, Y");
+        $date_format = _('M j, Y');
     }
 
     return( date_intl( $date_format, $stamp ) );

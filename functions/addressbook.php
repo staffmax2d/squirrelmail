@@ -82,7 +82,7 @@ function addressbook_init($showerr = true, $onlylocal = false) {
             'owner' => $username,
             'table' => $addrbook_table));
         if (!$r && $showerr) {
-            $abook_init_error .= _("Error initializing address book database.") . ' ' . $abook->error;
+            $abook_init_error .= _('Error initializing address book database.') . ' ' . $abook->error;
         }
     } else {
         /* File */
@@ -92,14 +92,14 @@ function addressbook_init($showerr = true, $onlylocal = false) {
             'line_length' => $abook_file_line_length,
             'create' => true));
         if (!$r && $showerr) {
-            $abook_init_error .= sprintf(_("Error opening file %s"), $filename);
+            $abook_init_error .= sprintf(_('Error opening file %s'), $filename);
         }
     }
 
     /* This would be for the global addressbook */
     if (isset($abook_global_file) && isset($abook_global_file_writeable) && trim($abook_global_file) != '') {
         // Detect place of address book
-        if (!preg_match("/[\/\\\]/", $abook_global_file)) {
+        if (!preg_match('/[\/\\\]/', $abook_global_file)) {
             /* no path chars, address book stored in data directory
              * make sure that there is a slash between data directory
              * and address book file name
@@ -107,14 +107,14 @@ function addressbook_init($showerr = true, $onlylocal = false) {
             $abook_global_filename = $data_dir
                     . ((substr($data_dir, -1) != '/') ? '/' : '')
                     . $abook_global_file;
-        } elseif (preg_match("/^\/|\w:/", $abook_global_file)) {
+        } elseif (preg_match('/^\/|\w:/', $abook_global_file)) {
             // full path is set in options (starts with slash or x:)
             $abook_global_filename = $abook_global_file;
         } else {
             $abook_global_filename = SM_PATH . $abook_global_file;
         }
         $r = $abook->add_backend('local_file', array('filename' => $abook_global_filename,
-            'name' => _("Global address book"),
+            'name' => _('Global address book'),
             'detect_writeable' => false,
             'line_length' => $abook_file_line_length,
             'writeable' => $abook_global_file_writeable,
@@ -122,7 +122,7 @@ function addressbook_init($showerr = true, $onlylocal = false) {
         if (!$r && $showerr) {
             if ($abook_init_error != '')
                 $abook_init_error .= "\n";
-            $abook_init_error .= _("Error initializing global address book.") . "\n" . $abook->error;
+            $abook_init_error .= _('Error initializing global address book.') . "\n" . $abook->error;
         }
     }
 
@@ -134,14 +134,14 @@ function addressbook_init($showerr = true, $onlylocal = false) {
         }
         $r = $abook->add_backend('database', Array('dsn' => $addrbook_global_dsn,
             'owner' => 'global',
-            'name' => _("Global address book"),
+            'name' => _('Global address book'),
             'writeable' => $addrbook_global_writeable,
             'listing' => $addrbook_global_listing,
             'table' => $addrbook_global_table));
         if (!$r && $showerr) {
             if ($abook_init_error != '')
                 $abook_init_error .= "\n";
-            $abook_init_error .= _("Error initializing global address book.") . "\n" . $abook->error;
+            $abook_init_error .= _('Error initializing global address book.') . "\n" . $abook->error;
         }
     }
 
@@ -165,7 +165,7 @@ function addressbook_init($showerr = true, $onlylocal = false) {
                     if (!$r && $showerr) {
                         if ($abook_init_error != '')
                             $abook_init_error .= "\n";
-                        $abook_init_error .= sprintf(_("Error initializing LDAP server %s:") .
+                        $abook_init_error .= sprintf(_('Error initializing LDAP server %s:') .
                                 "\n", $param['host']);
                         $abook_init_error .= $abook->error;
                     }
@@ -302,7 +302,7 @@ function show_abook_sort_button($abook_sort_order, $alt_tag, $Down, $Up) {
     return ' <a href="' . $form_url . '?abook_sort_order=' . $which
             . '"><img src="../images/' . $img
             . '" border="0" width="12" height="10" alt="' . $alt_tag . '" title="'
-            . _("Click here to change the sorting of the address list") . '" /></a>';
+            . _('Click here to change the sorting of the address list') . '" /></a>';
 }
 
 /**
@@ -321,7 +321,7 @@ class AddressBook {
 
     // Constructor function.
     function AddressBook() {
-        $this->localbackendname = _("Personal address book");
+        $this->localbackendname = _('Personal address book');
     }
 
     /*
@@ -536,15 +536,15 @@ class AddressBook {
 
         /* Validate data */
         if (!is_array($userdata)) {
-            $this->error = _("Invalid input data");
+            $this->error = _('Invalid input data');
             return false;
         }
         if (empty($userdata['firstname']) && empty($userdata['lastname'])) {
-            $this->error = _("Name is missing");
+            $this->error = _('Name is missing');
             return false;
         }
         if (empty($userdata['email'])) {
-            $this->error = _("E-mail address is missing");
+            $this->error = _('E-mail address is missing');
             return false;
         }
         if (empty($userdata['nickname'])) {
@@ -552,13 +552,13 @@ class AddressBook {
         }
 
         if (preg_match('/[ :|#"!]/', $userdata['nickname'])) {
-            $this->error = _("Nickname contains illegal characters");
+            $this->error = _('Nickname contains illegal characters');
             return false;
         }
 
         /* Check that specified backend accept new entries */
         if (!$this->backends[$bnum]->writeable) {
-            $this->error = _("Address book is read-only");
+            $this->error = _('Address book is read-only');
             return false;
         }
 
@@ -596,7 +596,7 @@ class AddressBook {
 
         /* Check that specified backend is writable */
         if (!$this->backends[$bnum]->writeable) {
-            $this->error = _("Address book is read-only");
+            $this->error = _('Address book is read-only');
             return false;
         }
 
@@ -629,20 +629,20 @@ class AddressBook {
 
         /* Validate data */
         if (!is_array($userdata)) {
-            $this->error = _("Invalid input data");
+            $this->error = _('Invalid input data');
             return false;
         }
         if (empty($userdata['firstname']) && empty($userdata['lastname'])) {
-            $this->error = _("Name is missing");
+            $this->error = _('Name is missing');
             return false;
         }
         if (empty($userdata['email'])) {
-            $this->error = _("E-mail address is missing");
+            $this->error = _('E-mail address is missing');
             return false;
         }
 
         if (preg_match('/[: |#"!]/', $userdata['nickname'])) {
-            $this->error = _("Nickname contains illegal characters");
+            $this->error = _('Nickname contains illegal characters');
             return false;
         }
 
@@ -652,7 +652,7 @@ class AddressBook {
 
         /* Check that specified backend is writable */
         if (!$this->backends[$bnum]->writeable) {
-            $this->error = _("Address book is read-only");
+            $this->error = _('Address book is read-only');
             ;
             return false;
         }

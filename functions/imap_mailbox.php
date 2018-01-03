@@ -53,7 +53,7 @@ function find_mailbox_name($mailbox) {
  * @return bool whether this is a Noselect mailbox.
  */
 function check_is_noselect($lsub_line) {
-    return preg_match("/^\* (LSUB|LIST) \([^\)]*\\\\Noselect[^\)]*\)/i", $lsub_line);
+    return preg_match('/^\* (LSUB|LIST) \([^\)]*\\\\Noselect[^\)]*\)/i', $lsub_line);
 }
 
 /**
@@ -289,13 +289,13 @@ function sqimap_mailbox_select($imap_stream, $mailbox) {
         $glb = &VarHelper::$glb;
         $color = &$glb['color'];
         (include_once SM_PATH . 'functions/display_messages.php');
-        error_box(sprintf(_("Invalid mailbox name: %s </body></html>"), htmlspecialchars($mailbox)), $color);
+        error_box(sprintf(_('Invalid mailbox name: %s </body></html>'), htmlspecialchars($mailbox)), $color);
         sqimap_logout($imap_stream);
         trigger_error('Invalid mailbox name', E_USER_NOTICE);
     }
 
     // cleanup $mailbox in order to prevent IMAP injection attacks
-    $mailbox = str_replace(array("\r", "\n"), array("", ""), $mailbox);
+    $mailbox = str_replace(array('\r', '\n'), array('', ''), $mailbox);
     set_filter(false);
     set_no_return(false);
     set_outputstream(false);
@@ -307,11 +307,11 @@ function sqimap_mailbox_select($imap_stream, $mailbox) {
         } else if (preg_match('/^\*\s([0-9]+)\s(\w+)/', $read[$i], $regs)) {
             $result[strtoupper($regs[2])] = $regs[1];
         } else {
-            if (preg_match("/PERMANENTFLAGS(.*)/i", $read[$i], $regs)) {
-                $regs[1] = trim(preg_replace(array("/\(/", "/\)/", "/\]/"), '', $regs[1]));
+            if (preg_matc('/PERMANENTFLAGS(.*)/i', $read[$i], $regs)) {
+                $regs[1] = trim(preg_replace(array('/\(/", "/\)/", "/\]/'), '', $regs[1]));
                 $result['PERMANENTFLAGS'] = $regs[1];
-            } else if (preg_match("/FLAGS(.*)/i", $read[$i], $regs)) {
-                $regs[1] = trim(preg_replace(array("/\(/", "/\)/"), '', $regs[1]));
+            } else if (preg_match('/FLAGS(.*)/i', $read[$i], $regs)) {
+                $regs[1] = trim(preg_replace(array('/\(/", "/\)'), '', $regs[1]));
                 $result['FLAGS'] = $regs[1];
             }
         }
@@ -521,7 +521,7 @@ function sqimap_mailbox_parse($line, $line_lsub) {
         /* Format folder name, but only if it's a INBOX.* or has a parent. */
         $boxesallbyname[$mailbox] = $g;
         $parentfolder = readMailboxParent($mailbox, $delimiter);
-        if ((strtolower(substr($mailbox, 0, 5)) == "inbox") ||
+        if ((strtolower(substr($mailbox, 0, 5)) == 'inbox') ||
                 (substr($mailbox, 0, strlen($folder_prefix)) == $folder_prefix) ||
                 (isset($boxesallbyname[$parentfolder]) &&
                 (strlen($parentfolder) > 0) )) {
@@ -550,7 +550,7 @@ function sqimap_mailbox_parse($line, $line_lsub) {
         $boxesall[$g]['flags'] = array();
         if (isset($line[$g])) {
             if (preg_match('/\(([^)]*)\)/', $line[$g], $regs)) {
-                $flags = trim(strtolower(str_replace('\\', '', $regs[1])));
+                $flags = trim(strtolower(str_replace("\\", '', $regs[1])));
                 if ($flags) {
                     $boxesall[$g]['flags'] = explode(' ', $flags);
                 }
@@ -619,7 +619,7 @@ function sqimap_mailbox_option_list($imap_stream, $show_selected = 0, $folder_sk
             // nevermind, to many dependencies this should be fixed!
 
             if (strtolower($box) == 'inbox') { // inbox is special and not casesensitive
-                $box2 = _("INBOX");
+                $box2 = _('INBOX');
             } else {
                 switch ($shorten_box_names) {
                     case 2: /* delimited, style = 2 */
@@ -951,7 +951,7 @@ function sqimap_mailbox_list_all($imap_stream) {
 
             $flags = substr($read_mlbx, strpos($read_mlbx, '(') + 1);
             $flags = substr($flags, 0, strpos($flags, ')'));
-            $flags = str_replace('\\', '', $flags);
+            $flags = str_replace("\\", ' ', $flags);
             $flags = trim(strtolower($flags));
             if ($flags) {
                 $boxes[$g]['flags'] = explode(' ', $flags);

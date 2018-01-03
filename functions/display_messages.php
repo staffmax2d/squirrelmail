@@ -36,7 +36,7 @@ $default_folder_prefix = &$glb['default_folder_prefix'];
             $mailbox = substr($mailbox, strlen($default_folder_prefix));
     }
     
-    $string .= sprintf (_("Click here to return to %s"),
+    $string .= sprintf (_('Click here to return to %s'),
                   htmlspecialchars(imap_utf7_decode_local($mailbox))).
               '</a></td></tr>';
     error_box($string, $color);
@@ -110,23 +110,23 @@ $theme_default = &$glb['theme_default'];
     echo $str6;
 
     if (isset($org_logo) && ($org_logo != '')) {
-        echo '<img src="'.$org_logo.'" alt="'.sprintf(_("%s Logo"), $org_name).
-             "\"$width_and_height /><br />\n";
+        echo '<img src="'.$org_logo.'" alt="'.sprintf(_('%s Logo'), $org_name). 
+                "\"$width_and_height /><br/>\n";
     }
     $str7= ( $hide_sm_attributions ? '' :
-            '<small>' . sprintf (_("SquirrelMail version %s"), $version) . '<br />'.
-            _("By the SquirrelMail Project Team") . "<br /></small>\n" ).
+            '<small>' . sprintf (_('SquirrelMail version %s'), $version) . '<br />'.
+            _('By the SquirrelMail Project Team') . "<br /></small>\n" ).
          '<table cellspacing="1" cellpadding="0" bgcolor="'.$color[1].'" width="70%">'.
          '<tr><td>'.
          '<table width="100%" border="0" bgcolor="'.$color[4].'" align="center">'.
          '<tr><td bgcolor="'.$color[0].'" align="center">'.
-         '<font color="'.$color[2].'"><b>' . _("ERROR") . '</b></font>'.
+         '<font color="'.$color[2].'"><b>' . _('ERROR') . '</b></font>'.
          '</td></tr>'.
          '<tr><td align="center">' . $errString . '</td></tr>'.
          '<tr><td bgcolor="'.$color[0].'" align="center">'.
          '<font color="'.$color[2].'"><b>'.
          '<a href="'.$logout_link.'" target="'.$frame_top.'">'.
-         _("Go to the login page") . '</a></b></font></td></tr>'.
+         _('Go to the login page') . '</a></b></font></td></tr>'.
          '</table></td></tr></table></center></body></html>';
     echo $str7;
 }
@@ -147,10 +147,10 @@ $org_title = &$glb['org_title'];
         $color[9]  = '#ababab';  /* mid-gray      Darker version of #0   */
     }
     if ( !isset( $org_title ) ) {
-        $org_title = "SquirrelMail";
+        $org_title = 'SquirrelMail';
     }
 
-    $err = _("ERROR");
+    $err = _('ERROR');
 
     $ret = concat_hook_function('error_box', $string);
     if($ret != '') {

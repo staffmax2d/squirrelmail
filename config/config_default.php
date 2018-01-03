@@ -32,7 +32,7 @@ $config_version = '1.4.0';
  * Organization's name
  * @global string $org_name
  */
-$org_name = "SquirrelMail";
+$org_name = 'SquirrelMail';
 
 /**
  * Organization's logo picture (blank if none)
@@ -930,7 +930,7 @@ $abook_file_line_length = 2048;
  * This is a message that is displayed immediately after a user logs in. 
  * @global string $motd
  */
-$motd = "";
+$motd = '';
 
 
 /**

@@ -43,10 +43,10 @@ VarHelper::$glb = &$GLOBALS;
 if (!(include_once 'DB.php')) {
     // same error also in abook_database.php
     (require_once SM_PATH . 'functions/display_messages.php');
-    $error  = _("Could not include PEAR database functions required for the database backend.") . "<br />\n";
-    $error .= sprintf(_("Is PEAR installed, and is the include path set correctly to find %s?"),
+    $error  = _('Could not include PEAR database functions required for the database backend.') . "<br />\n";
+    $error .= sprintf(_('Is PEAR installed, and is the include path set correctly to find %s?'),
                         '<tt>DB.php</tt>') . "<br />\n";
-    $error .= _("Please contact your system administrator and report this error.");
+    $error .= _('Please contact your system administrator and report this error.');
     error_box($error, $color);
     trigger_error(include_once 'DB.php', E_USER_NOTICE);
 }
@@ -75,16 +75,16 @@ $prefs_cache = &$glb['prefs_cache'];
 
     $db = new dbPrefs;
     if(isset($db->error)) {
-        printf( _("Preference database error (%s). Exiting abnormally"),
+        printf( _('Preference database error (%s). Exiting abnormally'),
               $db->error);
-        trigger_error("Db error", E_USER_NOTICE);
+        trigger_error('Db error', E_USER_NOTICE);
     }
 
     $db->fillPrefsCache($username);
     if (isset($db->error)) {
-        printf( _("Preference database error (%s). Exiting abnormally"),
+        printf( _('Preference database error (%s). Exiting abnormally'),
               $db->error);
-        trigger_error("Db error", E_USER_NOTICE);
+        trigger_error('Db error', E_USER_NOTICE);
     }
 
     $prefs_are_cached = true;
@@ -167,13 +167,13 @@ $prefs_val_field = &$glb['prefs_val_field'];
 
     function failQuery($res = NULL) {
         if($res == NULL) {
-            printf(_("Preference database error (%s). Exiting abnormally"),
+            printf(_('Preference database error (%s). Exiting abnormally'),
                   $this->error);
         } else {
-            printf(_("Preference database error (%s). Exiting abnormally"),
+            printf(_('Preference database error (%s). Exiting abnormally'),
                   DB::errorMessage($res));
         }
-       trigger_error("result is null in function failQuery", E_USER_NOTICE);
+       trigger_error('result is null in function failQuery', E_USER_NOTICE);
     }
 
 
@@ -233,7 +233,7 @@ $prefs_val_field = &$glb['prefs_val_field'];
             return false;
         }
         if ($this->db_type == SMDB_MYSQL) {
-            $query = sprintf("REPLACE INTO %s (%s, %s, %s) ".
+            $query = sprintf('REPLACE INTO %s (%s, %s, %s) '.
                              "VALUES('%s','%s','%s')",
                              $this->table,
                              $this->user_field,
@@ -248,7 +248,7 @@ $prefs_val_field = &$glb['prefs_val_field'];
                 $this->failQuery($res);
             }
         } elseif ($this->db_type == SMDB_PGSQL) {
-            $this->dbh->simpleQuery("BEGIN TRANSACTION");
+            $this->dbh->simpleQuery('BEGIN TRANSACTION');
             $query = sprintf("DELETE FROM %s WHERE %s='%s' AND %s='%s'",
                              $this->table,
                              $this->user_field,
@@ -257,7 +257,7 @@ $prefs_val_field = &$glb['prefs_val_field'];
                              $this->dbh->quoteString($key));
             $res = $this->dbh->simpleQuery($query);
             if (DB::isError($res)) {
-                $this->dbh->simpleQuery("ROLLBACK TRANSACTION");
+                $this->dbh->simpleQuery('ROLLBACK TRANSACTION');
                 $this->failQuery($res);
             }
             $query = sprintf("INSERT INTO %s (%s, %s, %s) VALUES ('%s', '%s', '%s')",
@@ -270,10 +270,10 @@ $prefs_val_field = &$glb['prefs_val_field'];
                              $this->dbh->quoteString($value));
             $res = $this->dbh->simpleQuery($query);
             if (DB::isError($res)) {
-                $this->dbh->simpleQuery("ROLLBACK TRANSACTION");
+                $this->dbh->simpleQuery('ROLLBACK TRANSACTION');
                 $this->failQuery($res);
             }
-            $this->dbh->simpleQuery("COMMIT TRANSACTION");
+            $this->dbh->simpleQuery('COMMIT TRANSACTION');
         } else {
             $query = sprintf("DELETE FROM %s WHERE %s='%s' AND %s='%s'",
                              $this->table,
@@ -311,7 +311,7 @@ $prefs_val_field = &$glb['prefs_val_field'];
         }
 
         $prefs_cache = array();
-        $query = sprintf("SELECT %s as prefkey, %s as prefval FROM %s ".
+        $query = sprintf('SELECT %s as prefkey, %s as prefval FROM %s '.
                          "WHERE %s = '%s'",
                          $this->key_field,
                          $this->val_field,
@@ -339,9 +339,9 @@ function getPref($data_dir, $username, $string, $default = '') {
     echo htmlspecialchars($data_dir);
     $db = new dbPrefs;
     if(isset($db->error)) {
-        printf( _("Preference database error (%s). Exiting abnormally"),
+        printf( _('Preference database error (%s). Exiting abnormally'),
               $db->error);
-        trigger_error("Db error", E_USER_NOTICE);
+        trigger_error('Db error', E_USER_NOTICE);
     }
 
     return $db->getKey($username, $string, $default);
@@ -421,7 +421,7 @@ function checkForPrefs($data_dir, $username='') {
  * @ignore
  */
 function setSig($data_dir, $username, $number, $string) {
-    if ($number == "g") {
+    if ($number == 'g') {
         $key = '___signature___';
     } else {
         $key = sprintf('___sig%s___', $number);
@@ -435,7 +435,7 @@ function setSig($data_dir, $username, $number, $string) {
  * @ignore
  */
 function getSig($data_dir, $username, $number) {
-    if ($number == "g") {
+    if ($number == 'g') {
         $key = '___signature___';
     } else {
         $key = sprintf('___sig%d___', $number);
